@@ -50,6 +50,15 @@
                 </div>
                 <div class="ytilsYupputClearance"></div>
             </div>
+
+            <div class="ytilsYupputFinding">
+                <div class="ytilsYupputFindingLeft" style="background-image: url(img/schleswig.jpg); "></div>
+                <div class="ytilsYupputFindingRight">
+                    <div class="ytilsYupputFindingMainLine"><span class="ytilsYupputFindingRightTextInner">Schleswig</div>
+                    <div class="ytilsYupputFindingSubLine"><span class="ytilsYupputFindingRightTextInner">25.02.2016 | Schlei, Wikingerstadt</span></div>
+                </div>
+                <div class="ytilsYupputClearance"></div>
+            </div>
         </div>
         <div id="ytilsYupputFindingsDownIndicator">
             <img src="img/yupput.findings-up.png" alt="" />
