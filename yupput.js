@@ -2,10 +2,12 @@
 (function() {
 
     /**jsmrg include /Users/kim/Documents/Develop/yupput.ytils.com/lib/slice/js/yupput.namespace-head.js */
+    /**jsmrg include /Users/kim/Documents/Develop/yupput.ytils.com/lib/slice/js/yupput.helper.js */
+
     /**
      * The yupput constructor.
      * Configuration options:
-     *  - xxx
+     *  - config.placeholder: The input's placeholder.
      *
      * @param {object} config
      * @constructor
@@ -21,12 +23,14 @@
 
         this.show = function(initialValue) {
 
+            /*
             alert(typeof config);
             if (initialized) {
                 alert("ja: " + initialValue);
             } else {
                 alert("nein: " + initialValue);
             }
+             */
 
         };
 

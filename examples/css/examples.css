@@ -1,7 +1,8 @@
 body {
+
     background-color: rgb(247, 247, 247);
     color: rgb(82, 82, 82);
-    font-family: "Lucida Grande", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 h1 {
@@ -19,16 +20,125 @@ h3 {
     font-size: 14px;
 }
 
-/**
- Spotlight opens at top ~22% at the upper bound
- */
-
 div#ytilsYupputOuterContainer {
 
     position: absolute;
+    width: 100%;
     top: 22%;
+    z-index: 2000;
 }
 
 div#ytilsYupputInputContainer {
 
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.3) 0 5px 15px;
+    margin: auto;
+    max-width: 660px;
+    -moz-box-shadow: rgba(0, 0,0, 0.3) 0 5px 15px;
+    padding: 10px;
+    text-align: center;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 5px 15px;
+    width: 80%;
+}
+
+input#ytilsYupputInput {
+
+    background-color: rgb(247, 247, 247);
+    border: 0;
+    color: rgb(82, 82, 82);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 28px;
+    outline: none;
+    padding: 5px;
+    width: 100%;
+}
+
+input#ytilsYupputInput {
+
+}
+
+div#ytilsYupputOuterContainer ::-webkit-input-placeholder {
+
+    opacity: 0.5;
+}
+
+div#ytilsYupputOuterContainer :-ms-input-placeholder {
+
+    opacity: 0.5;
+}
+
+div#ytilsYupputOuterContainer ::placeholder {
+
+    opacity: 0.5;
+}
+
+div#ytilsYupputFindings {
+
+    padding-bottom: 5px;
+}
+
+div.ytilsYupputFinding {
+
+    border-bottom: #b6b6b6 solid 1px;
+    padding: 10px 5px 10px 5px;
+    text-align: left;
+}
+
+div.ytilsYupputFinding:last-child {
+
+    border-bottom: none;
+    padding: 10px 5px 10px 5px;
+    text-align: left;
+}
+
+div.ytilsYupputFinding div.ytilsYupputFindingLeft {
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: auto;
+    float: left;
+    height: 36px;
+    width: 60px;
+}
+
+div.ytilsYupputClearance {
+
+    clear: both;
+    height: 0;
+    overflow: hidden;
+}
+
+div.ytilsYupputFinding div.ytilsYupputFindingRight {
+
+
+}
+
+div.ytilsYupputFinding span.ytilsYupputFindingRightTextInner {
+
+    padding-left: 10px;
+}
+
+div#ytilsYupputFindings div.ytilsYupputFindingMainLine {
+
+    font-size: 20px;
+    padding-left: 5px;
+}
+
+div#ytilsYupputFindings div.ytilsYupputFindingSubLine {
+
+    font-size: 11px;
+    padding-left: 5px;
+}
+
+div#ytilsYupputFindingsUpIndicator,
+div#ytilsYupputFindingsDownIndicator {
+
+    text-align: right;
+}
+
+div#ytilsYupputFindingsUpIndicator img,
+div#ytilsYupputFindingsDownIndicator img {
+
+    cursor: pointer;
+    width: 20px;
 }
