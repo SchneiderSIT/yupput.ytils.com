@@ -84,6 +84,14 @@ div.ytilsYupputFinding {
     text-align: left;
 }
 
+div.ytilsYupputFinding:hover,
+.ytilsYupputFindingHighlighted {
+
+    background-color: #3B91F7;
+    color: #FFF;
+    cursor: pointer;
+}
+
 div.ytilsYupputFinding:last-child {
 
     border-bottom: none;

@@ -1,0 +1,59 @@
+/**jsmrg include /Users/kim/Documents/Develop/yupput.ytils.com/lib/slice/js/yupput.jslint-head.js */
+(function() {
+
+    /**jsmrg include /Users/kim/Documents/Develop/yupput.ytils.com/lib/slice/js/yupput.namespace-head.js */
+    /**jsmrg include /Users/kim/Documents/Develop/yupput.ytils.com/lib/slice/js/yupput.helper.js */
+    /**jsmrg include /Users/kim/Documents/Develop/yupput.ytils.com/lib/slice/js/yupput.html.js */
+
+    /**
+     * The yupput constructor.
+     *
+     * @param {object} config
+     * @param {string} [config.placeholder] - The placeholder text for the input on the top, defaults to "Search value".
+     * @param {string} [config.placeholder] - The z-index for the absolute positioned Yupput container, defaults to 2000.
+     * @constructor
+     */
+    Ytils.Yupput = function(config) {
+
+        var DEFAULT_PLACEHOLDER = "Search value";
+        var DEFAULT_Z_INDEX = 2000;
+        var CONTAINER_ID = "ytilsYupputOuterContainer";
+
+        var placeholder;
+        var zIndex;
+        var initialized = false;
+
+        var createInitialContainer = function() {
+
+            Ytils.YupputHtml.createDiv(CONTAINER_ID);
+        };
+
+        var construct = function() {
+
+            placeholder = Ytils.YupputHelper.god("placeholder") || DEFAULT_PLACEHOLDER;
+            zIndex = Ytils.YupputHelper.god("zIndex") || DEFAULT_Z_INDEX;
+            initialized = true;
+
+            createInitialContainer();
+        };
+
+        /**
+         * Renders the dialogue.
+         *
+         * @param {object[]} values - An array of objects with the following parameters:
+         * @param {string} values.headline - The headline of the entry.
+         * @param {string[]} values.metaData - An array of string to display meta data in the second row below the headline.
+         * @param {string} [values.thumbnail] - Optional: The url to the thumbnail image.
+         * @param {string} values.value - The value to return to the callback if value[x] has been selected.
+         * @property
+         */
+        this.show = function(values) {
+
+
+
+        };
+
+        construct();
+    };
+
+}());

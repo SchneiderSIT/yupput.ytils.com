@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Ytils Yupput</title>
-    <link href="css/examples.css<?php echo "?".time(); ?>" rel="stylesheet" type="text/css" media="screen" />
+    <link href="css/ytils.yupput.css<?php echo "?".time(); ?>" rel="stylesheet" type="text/css" media="screen" />
 </head>
 <body>
 <div id="ytilsYupputOuterContainer">
     <div id="ytilsYupputInputContainer">
         <label>
-            <input id="ytilsYupputInput" type="text" name="ytilsYupputInput" value="" placeholder="Medienpool-Suche" />
+            <input id="ytilsYupputInput" type="text" name="ytilsYupputInput" value="" placeholder="{{inputPlaceHolder}}" />
         </label>
         <div id="ytilsYupputFindingsUpIndicator">
             <img src="img/yupput.findings-down.png" alt="" />
@@ -24,7 +24,7 @@
                 <div class="ytilsYupputClearance"></div>
             </div>
 
-            <div class="ytilsYupputFinding ytilsYupputFindingHighlighted">
+            <div class="ytilsYupputFinding">
                 <div class="ytilsYupputFindingLeft" style="background-image: url(img/flensburg.jpg); "></div>
                 <div class="ytilsYupputFindingRight">
                     <div class="ytilsYupputFindingMainLine"><span class="ytilsYupputFindingRightTextInner">Flensburg</div>
