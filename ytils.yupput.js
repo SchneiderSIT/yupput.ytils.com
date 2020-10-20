@@ -8,12 +8,13 @@
     /**
      * The yupput constructor.
      *
+     * @param {function} callback - The function that will be called with the param of the passed in value
      * @param {object} config
      * @param {string} [config.placeholder] - The placeholder text for the input on the top, defaults to "Search value".
      * @param {string} [config.placeholder] - The z-index for the absolute positioned Yupput container, defaults to 2000.
      * @constructor
      */
-    Ytils.Yupput = function(config) {
+    Ytils.Yupput = function(callback, config) {
 
         var DEFAULT_PLACEHOLDER = "Search value";
         var DEFAULT_Z_INDEX = 2000;
@@ -34,6 +35,8 @@
             zIndex = Ytils.YupputHelper.god("zIndex") || DEFAULT_Z_INDEX;
             initialized = true;
 
+            Ytils.YupputHelper.expectFunction(callback, "Ytils.Yupput expects parameter callback to be a function.");
+
             createInitialContainer();
         };
 
@@ -45,7 +48,6 @@
          * @param {string[]} values.metaData - An array of string to display meta data in the second row below the headline.
          * @param {string} [values.thumbnail] - Optional: The url to the thumbnail image.
          * @param {string} values.value - The value to return to the callback if value[x] has been selected.
-         * @property
          */
         this.show = function(values) {
 
