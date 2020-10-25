@@ -23,6 +23,7 @@
 
         var CONTAINER_ID = "ytilsYupputOuterContainer";
         var CONTAINER_FINDINGS_ID = "ytilsYupputFindings";
+        var INPUT_ID = "ytilsYupputInput";
         var FINDINGS_UP_BTN_ID = "ytilsYupputFindingsUpBtn";
         var FINDINGS_DOWN_BTN_ID = "ytilsYupputFindingsDownBtn";
 
@@ -32,9 +33,33 @@
         var placeholder;
         var zIndex;
         var autoHide;
+        var inputHandle;
         var initialized = false;
         var containerFindingsInnerHtml = "";
         var uiVisible = false;
+
+        /**
+         * Private function to render the dialogue.
+         *
+         * @param {object[]} values - An array of objects with the following parameters:
+         * @param {string} values.headline - The headline of the entry.
+         * @param {string[]} values.metaData - An array of string to display meta data in the second row below the headline.
+         * @param {string} [values.thumbnail] - Optional: The url to the thumbnail image.
+         * @param {string} values.value - The value to return to the callback if value[x] has been selected.
+         */
+        var showPrivate = function(values) {
+
+            Ytils.YupputHtml.show(CONTAINER_ID);
+            uiVisible = true;
+        };
+
+        /**
+         * Sets the focus to the input element.
+         */
+        var setFocus = function() {
+
+            document.getElementById(CONTAINER_ID).focus();
+        };
 
         /**
          * Creates the surrounding container for Yupput.
@@ -50,7 +75,15 @@
 
         var initKeyListener = function() {
 
+            var inputHandle = document.getElementById(INPUT_ID);
 
+            inputHandle.addEventListener("keydown", (e) => {
+
+                if (e.ctrlKey && e.shiftKey && e.key === "M") {
+
+                    showPrivate()
+                }
+            });
         };
 
         /**
@@ -61,12 +94,15 @@
             placeholder = Ytils.YupputHelper.god(config,"placeholder") || DEFAULT_PLACEHOLDER;
             zIndex = Ytils.YupputHelper.god(config,"zIndex") || DEFAULT_Z_INDEX;
             autoHide = Ytils.YupputHelper.god(config,"autoHide") || DEFAULT_AUTO_HIDE;
-            initialized = true;
 
             Ytils.YupputHelper.expectFunction(callback, "Ytils.Yupput expects parameter callback to be a function.");
 
             createInitialContainer();
+
+            Ytils.YupputHtml.expectExisting(INPUT_ID);
             initKeyListener();
+
+            initialized = true;
         };
 
         /**
@@ -80,8 +116,8 @@
          */
         this.show = function(values) {
 
-            Ytils.YupputHtml.show(CONTAINER_ID);
-            uiVisible = true;
+            showPrivate(values);
+            setFocus();
         };
 
         construct();
