@@ -1,0 +1,4 @@
+open rexmd.ytils.com
+user <username> <password>
+put <local path to>/ytils.yupput.out.js <server path to>/ytils.yupput-<version>.js
+bye
