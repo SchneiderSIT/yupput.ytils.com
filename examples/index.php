@@ -36,8 +36,8 @@
 
     var ready = function () {
 
-        var yupput = new Ytils.Yupput(function() { }, { placeholder: "Suchbegriff" });
-        yupput.show([]);
+        var yupput = new Ytils.Yupput(sampleData, function() { }, { placeholder: "Suchbegriff" });
+        // yupput.show();
     };
 
     document.addEventListener("DOMContentLoaded", function(event) {
