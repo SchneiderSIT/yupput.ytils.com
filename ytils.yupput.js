@@ -58,6 +58,8 @@
             if (false === uiVisible) {
 
                 Ytils.YupputHtml.show(CONTAINER_ID);
+                // TODO: Insert data rows here.
+
                 setFocus();
                 uiVisible = true;
             }
@@ -96,7 +98,8 @@
                 }
             });
 
-            // TODO: var inputHandle = document.getElementById(INPUT_ID);
+            // TODO: Add enter listener.
+            // var inputHandle = document.getElementById(INPUT_ID);
         };
 
         /**
