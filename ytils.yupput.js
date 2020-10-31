@@ -1,9 +1,9 @@
-/**jsmrg include /Users/kim/Documents/Develop/yupput.ytils.com/lib/slice/js/yupput.jslint-head.js */
+/**jsmrg include lib/slice/js/yupput.jslint-head.js */
 (function() {
 
-    /**jsmrg include /Users/kim/Documents/Develop/yupput.ytils.com/lib/slice/js/yupput.namespace-head.js */
-    /**jsmrg include /Users/kim/Documents/Develop/yupput.ytils.com/lib/slice/js/yupput.helper.js */
-    /**jsmrg include /Users/kim/Documents/Develop/yupput.ytils.com/lib/slice/js/yupput.html.js */
+    /**jsmrg include lib/slice/js/yupput.namespace-head.js */
+    /**jsmrg include lib/slice/js/yupput.helper.js */
+    /**jsmrg include lib/slice/js/yupput.html.js */
 
     /**
      * The yupput constructor.
@@ -47,7 +47,7 @@
         var renderValues = function() {
 
             var findingsContainerHandle = document.getElementById(CONTAINER_FINDINGS_ID);
-            var findingHtmlTemplate = "/**jsmrg htmlvar escdoublequotes /Users/kim/Documents/Develop/yupput.ytils.com/lib/slice/htmlvar/yupput.finding.html */";
+            var findingHtmlTemplate = "/**jsmrg htmlvar escdoublequotes lib/slice/htmlvar/yupput.finding.html */";
         };
 
         /**
@@ -82,7 +82,7 @@
             Ytils.YupputHtml.createAndAppendIfNotExists(CONTAINER_ID);
             Ytils.YupputHtml.hide(CONTAINER_ID);
 
-            containerFindingsInnerHtml = "/**jsmrg htmlvar escdoublequotes /Users/kim/Documents/Develop/yupput.ytils.com/lib/slice/htmlvar/yupput.container-inner-html-w-input.html %d%placeholder */";
+            containerFindingsInnerHtml = "/**jsmrg htmlvar escdoublequotes lib/slice/htmlvar/yupput.container-inner-html-w-input.html %d%placeholder */";
             Ytils.YupputHtml.setInnerHtml(CONTAINER_ID, containerFindingsInnerHtml);
         };
 
