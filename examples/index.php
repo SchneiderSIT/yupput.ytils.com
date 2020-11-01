@@ -36,7 +36,7 @@
 
     var ready = function () {
 
-        var yupput = new Ytils.Yupput(sampleData, function() { }, { placeholder: "Suchbegriff" });
+        var yupput = new Ytils.Yupput(sampleData, function(value, inputValue) { alert(inputValue); }, { placeholder: "Suchbegriff" });
         // yupput.show();
     };
 
