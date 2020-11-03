@@ -40,10 +40,16 @@
      */
     Ytils.Yupput = function(values, callback, config) {
 
+        var DATA_KEY_HEADLINE = "headline";
+        var DATA_KEY_META_DATA = "metaData";
+        var DATA_KEY_THUMBNAIL = "thumbnail";
+        var DATA_KEY_VALUE = "value";
+
         // Configuration defaults:
         var DEFAULT_PLACEHOLDER = "Search value";
         var DEFAULT_Z_INDEX = 2000;
         var DEFAULT_AUTO_HIDE = true;
+        var DEFAULT_MAX_ITEM_COUNT = 5;
         var DEFAULT_CTRL_SHIFT_CHAR = "Y";
         var DEFAULT_STOP_PROPAGATE_ENTER = false;
         var DEFAULT_STOP_PROPAGATE_ESCAPE = false;
@@ -60,11 +66,14 @@
 
         var valuesPrivate;
         var valuesPrivateWRendering;
+        var valuesPrivateWRenderingFiltered;
+        var startValueDisplayed = 0;
 
         // General configuration settings.
         var placeholder;
         var zIndex;
         var autoHide;
+        var maxItemCount;
 
         // Event configuration settings:
         var stopPropagateEnter; // TODO
@@ -86,19 +95,14 @@
          */
         var selectedItem = null;
 
-        /**
-         *
-         *
-         * @type {string[]}
-         */
-        var renderedFindings = [ ];
-
         var fireCallback = function() {
 
             callback(selectedItem, Ytils.YupputInput.getValueFromInput(INPUT_ID));
         };
 
         /**
+         * Renders one <div class="ytilsYupputFinding">...</div>.
+         *
          * @param {string} thumbnail
          * @param {string} headline
          * @param {string} metaData
@@ -140,9 +144,9 @@
 
             for (i = 0; i < c; i += 1) {
 
-                var thumbail = god(valuesPrivate[i], "thumbnail");
-                var headline = god(valuesPrivate[i], "headline");
-                var metaData = god(valuesPrivate[i], "metaData");
+                var thumbail = god(valuesPrivate[i], DATA_KEY_THUMBNAIL);
+                var headline = god(valuesPrivate[i], DATA_KEY_HEADLINE);
+                var metaData = god(valuesPrivate[i], DATA_KEY_META_DATA);
                 var itemHtml = createFindingHtml(thumbail, headline, metaData);
 
                 valuesPrivateWRendering[i] = { };
@@ -151,8 +155,46 @@
                 valuesPrivateWRendering[i].metaData = metaData;
                 valuesPrivateWRendering[i].html = itemHtml;
             }
+        };
 
-            var a = 10;
+        var filterAllValues = function(inputValue) {
+
+            var god = Ytils.YupputHelper.god;
+
+            var matchesHeadlineOrMetaData = function(item, inputValue) {
+
+                var headlineMatch = Ytils.YupputHelper.isStringStartingWith(god(item, DATA_KEY_HEADLINE), inputValue);
+                var metaDataMatch = Ytils.YupputHelper.isStringStartingWith(god(item, DATA_KEY_META_DATA), inputValue);
+
+                return headlineMatch || metaDataMatch;
+            };
+
+            // Reset:
+            valuesPrivateWRenderingFiltered = [ ];
+
+            // Empty input: Filtering not neccessary:
+            if (false === Ytils.YupputHelper.isNonEmptyString(inputValue)) {
+
+                valuesPrivateWRenderingFiltered = valuesPrivateWRendering;
+
+            } else {
+
+                var c = valuesPrivateWRendering.length;
+                var i;
+
+                for (i = 0; i < c; i += 1) {
+
+                    if (matchesHeadlineOrMetaData(valuesPrivateWRendering[i], inputValue)) {
+
+                        valuesPrivateWRenderingFiltered.push(matchesHeadlineOrMetaData(valuesPrivateWRendering[i]));
+                    }
+                }
+            }
+        };
+
+        var renderFilteredValues = function() {
+
+            // startValueDisplayed
         };
 
         /**
@@ -174,7 +216,9 @@
             if (false === uiVisible) {
 
                 Ytils.YupputHtml.show(CONTAINER_ID);
-                prepareAllValues();
+                prepareAllValues(); // Prepares: valuesPrivateWRendering
+                filterAllValues(Ytils.YupputInput.getValueFromInput(INPUT_ID)); // Prepares: valuesPrivateWRenderingFiltered
+                renderFilteredValues();
 
                 setFocus();
                 uiVisible = true;
@@ -251,6 +295,7 @@
             placeholder = god(config,"placeholder") || DEFAULT_PLACEHOLDER;
             zIndex = god(config,"zIndex") || DEFAULT_Z_INDEX;
             autoHide = god(config,"autoHide") || DEFAULT_AUTO_HIDE;
+            maxItemCount = god(config,"maxItemCount") || DEFAULT_MAX_ITEM_COUNT;
             ctrlShiftChar = god(config,"ctrlShiftChar") || DEFAULT_CTRL_SHIFT_CHAR;
             hideOnEscape = god(config,"hideOnEscape") || DEFAULT_HIDE_ON_ESCAPE;
 

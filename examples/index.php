@@ -13,22 +13,22 @@
     var sampleData = [
         {
             headline: "Kiel",
-            metaData: ["25.02.2020", "Ostseee, Wahlheimat"],
+            metaData: ["25.02.2020, Ostseee, Wahlheimat"],
             thumbnail: "https://rexmd.ytils.com/yupput/examples/img/kiel.jpg",
             value: "https://rexmd.ytils.com/yupput/examples/img/kiel.jpg"
         }, {
             headline: "Flensburg",
-            metaData: ["25.02.2019", "Ostseee, Studienstadt"],
+            metaData: "25.02.2019, Ostseee, Studienstadt",
             thumbnail: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg",
             value: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg"
         }, {
             headline: "Eckernförde",
-            metaData: ["25.02.2018", "Ostseee, Schönste Kleinstadt"],
+            metaData: "25.02.2018, Ostseee, Schönste Kleinstadt",
             thumbnail: "https://rexmd.ytils.com/yupput/examples/img/eckernfoerde.jpg",
             value: "https://rexmd.ytils.com/yupput/examples/img/eckernfoerde.jpg"
         }, {
             headline: "Danzig",
-            metaData: ["25.02.2018", "Ostseee, Schönste Stadt Polens"],
+            metaData: "25.02.2018, Ostseee, Schönste Stadt Polens",
             thumbnail: "https://rexmd.ytils.com/yupput/examples/img/danzig.jpg",
             value: "https://rexmd.ytils.com/yupput/examples/img/danzig.jpg"
         }
@@ -36,7 +36,7 @@
 
     var ready = function () {
 
-        var yupput = new Ytils.Yupput(sampleData, function(value, inputValue) { alert(inputValue); }, { placeholder: "Suchbegriff" });
+        var yupput = new Ytils.Yupput(sampleData, function(value, inputValue) { alert(inputValue); }, { placeholder: "Suchbegriff", maxItemCount: 2 });
         // yupput.show();
     };
 
