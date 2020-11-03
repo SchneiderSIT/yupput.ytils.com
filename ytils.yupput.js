@@ -59,6 +59,8 @@
         var CONTAINER_ID = "ytilsYupputOuterContainer";
         var CONTAINER_FINDINGS_ID = "ytilsYupputFindings";
         var INPUT_ID = "ytilsYupputInput";
+        var CONTAINER_FINDINGS_UP_ID = "ytilsYupputFindingsUpIndicator";
+        var CONTAINER_FINDINGS_DOWN_ID = "ytilsYupputFindingsDownIndicator";
         var FINDINGS_UP_BTN_ID = "ytilsYupputFindingsUpBtn";
         var FINDINGS_DOWN_BTN_ID = "ytilsYupputFindingsDownBtn";
 
@@ -134,6 +136,9 @@
             return findingHtml;
         };
 
+        /**
+         * Prepares all values to be rendered as html slice.
+         */
         var prepareAllValues = function() {
 
             var i;
@@ -157,6 +162,11 @@
             }
         };
 
+        /**
+         * Filters all prepared values according to the input.
+         *
+         * @param {string} inputValue
+         */
         var filterAllValues = function(inputValue) {
 
             var god = Ytils.YupputHelper.god;
@@ -175,7 +185,7 @@
             // Empty input: Filtering not neccessary:
             if (false === Ytils.YupputHelper.isNonEmptyString(inputValue)) {
 
-                valuesPrivateWRenderingFiltered = valuesPrivateWRendering;
+                valuesPrivateWRenderingFiltered = [ ];
 
             } else {
 
@@ -194,7 +204,35 @@
 
         var renderFilteredValues = function() {
 
+
             // startValueDisplayed
+        };
+
+        var handleUpDownBtns = function() {
+
+            /*
+        var CONTAINER_FINDINGS_UP_ID = "ytilsYupputFindingsUpIndicator";
+        var CONTAINER_FINDINGS_DOWN_ID = "ytilsYupputFindingsDownIndicator";
+        var FINDINGS_UP_BTN_ID = "ytilsYupputFindingsUpBtn";
+        var FINDINGS_DOWN_BTN_ID = "ytilsYupputFindingsDownBtn";
+             */
+
+            var hideAllUpDownBtns = function() {
+
+                Ytils.YupputHtml.hide(CONTAINER_FINDINGS_ID);
+                Ytils.YupputHtml.hide(CONTAINER_FINDINGS_UP_ID);
+                Ytils.YupputHtml.hide(CONTAINER_FINDINGS_DOWN_ID);
+            };
+
+            if (valuesPrivateWRenderingFiltered.length === 0) {
+
+                hideAllUpDownBtns();
+
+            } else {
+
+                // Falls
+
+            }
         };
 
         /**
@@ -219,6 +257,7 @@
                 prepareAllValues(); // Prepares: valuesPrivateWRendering
                 filterAllValues(Ytils.YupputInput.getValueFromInput(INPUT_ID)); // Prepares: valuesPrivateWRenderingFiltered
                 renderFilteredValues();
+                handleUpDownBtns();
 
                 setFocus();
                 uiVisible = true;
@@ -267,14 +306,18 @@
                 if (hideOnEscape && e.key === "Escape") {
 
                     hidePrivate();
-                }
 
-                if (e.key === "Enter") {
+                } else if (e.key === "Enter") {
 
                     if (uiVisible) {
 
                         fireCallback();
                     }
+
+                } else {
+
+
+
                 }
             };
         };
