@@ -217,7 +217,7 @@
         var FINDINGS_DOWN_BTN_ID = "ytilsYupputFindingsDownBtn";
              */
 
-            var hideAllUpDownBtns = function() {
+            var hideAllUpAndDownBtns = function () {
 
                 Ytils.YupputHtml.hide(CONTAINER_FINDINGS_ID);
                 Ytils.YupputHtml.hide(CONTAINER_FINDINGS_UP_ID);
@@ -226,7 +226,7 @@
 
             if (valuesPrivateWRenderingFiltered.length === 0) {
 
-                hideAllUpDownBtns();
+                hideAllUpAndDownBtns();
 
             } else {
 
