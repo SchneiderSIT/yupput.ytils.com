@@ -34,6 +34,10 @@
      * @param {string} [config.zIndex] - The z-index for the absolute positioned Yupput container, defaults to 2000.
      * @param {string} [config.autoHide] - Whether to automatically close Yupput dialogue on entry selection/callback or not. Defaults to true.
      * @param {string} [config.hideOnEscape] - Whether to close Yupput dialogue on escape or not. Defaults to true.
+     * @param {string} [config.maxItemCount] - The maximum number of items being displayed on the Yupput dialogue. Defaults to 5.
+     * @param {string} [config.ctrlShiftChar] - The char that opens the Yupput dialogue, when hit together with Control and Shift. Defaults to "Y".
+     * @param {string} [config.stopPropagateEnter] - Whether to stop propagation of enter when hit while the cursor is in Yupput's input field. Defaults to false.
+     * @param {string} [config.stopPropagateEscape] - Whether to stop propagation of escape when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {function} [config.callbackBeforeShow] - Optional function callback before the Yupput dialogue opens.
      * @param {function} [config.callbackOnEscape] - Optional function callback on enter after Yupput's functionality has been done.
      * @constructor
@@ -79,7 +83,7 @@
 
         // Event configuration settings:
         var stopPropagateEnter; // TODO
-        var stopPropagateEsc; // TODO
+        var stopPropagateEscape; // TODO
         var hideOnEscape;
 
         // Callback functions:
@@ -173,8 +177,11 @@
 
             var matchesHeadlineOrMetaData = function(item, inputValue) {
 
-                var headlineMatch = Ytils.YupputHelper.isStringStartingWith(god(item, DATA_KEY_HEADLINE), inputValue);
-                var metaDataMatch = Ytils.YupputHelper.isStringStartingWith(god(item, DATA_KEY_META_DATA), inputValue);
+                var headlineHaystack = god(item, DATA_KEY_HEADLINE);
+                var metaDataHaystack = god(item, DATA_KEY_META_DATA);
+
+                var headlineMatch = Ytils.YupputHelper.isStringStartingWith(headlineHaystack, inputValue);
+                var metaDataMatch = Ytils.YupputHelper.isStringStartingWith(metaDataHaystack, inputValue);
 
                 return headlineMatch || metaDataMatch;
             };
@@ -196,7 +203,7 @@
 
                     if (matchesHeadlineOrMetaData(valuesPrivateWRendering[i], inputValue)) {
 
-                        valuesPrivateWRenderingFiltered.push(matchesHeadlineOrMetaData(valuesPrivateWRendering[i]));
+                        valuesPrivateWRenderingFiltered.push(valuesPrivateWRendering[i]);
                     }
                 }
             }
@@ -204,8 +211,18 @@
 
         var renderFilteredValues = function() {
 
+            // TODO
+            var a = 100;
+            // Merke vorherige Anzahl Treffer?
+            // Filtermenge ändert sich -> startValueDisplayed rückwärts auf nächsten Treffer
 
             // startValueDisplayed
+        };
+
+        var filterAllValuesAndRender = function(inputValue) {
+
+            filterAllValues(inputValue);
+            renderFilteredValues();
         };
 
         var handleUpDownBtns = function() {
@@ -230,8 +247,7 @@
 
             } else {
 
-                // Falls
-
+                // TODO
             }
         };
 
@@ -254,9 +270,8 @@
             if (false === uiVisible) {
 
                 Ytils.YupputHtml.show(CONTAINER_ID);
-                prepareAllValues(); // Prepares: valuesPrivateWRendering
-                filterAllValues(Ytils.YupputInput.getValueFromInput(INPUT_ID)); // Prepares: valuesPrivateWRenderingFiltered
-                renderFilteredValues();
+                prepareAllValues();
+                filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
                 handleUpDownBtns();
 
                 setFocus();
@@ -316,8 +331,7 @@
 
                 } else {
 
-
-
+                    filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
                 }
             };
         };
@@ -341,6 +355,8 @@
             maxItemCount = god(config,"maxItemCount") || DEFAULT_MAX_ITEM_COUNT;
             ctrlShiftChar = god(config,"ctrlShiftChar") || DEFAULT_CTRL_SHIFT_CHAR;
             hideOnEscape = god(config,"hideOnEscape") || DEFAULT_HIDE_ON_ESCAPE;
+            stopPropagateEnter = god(config,"stopPropagateEnter") || DEFAULT_STOP_PROPAGATE_ENTER;
+            stopPropagateEscape = god(config,"stopPropagateEscape") || DEFAULT_STOP_PROPAGATE_ESCAPE;
 
             // Check callback parameter:
             Ytils.YupputHelper.expectFunction(callback, "Ytils.Yupput expects parameter callback to be a function.");
