@@ -69,10 +69,10 @@
         var FINDINGS_DOWN_BTN_ID = "ytilsYupputFindingsDownBtn";
 
         var FINDING_HTML_TEMPLATE = "/**jsmrg htmlvar escdoublequotes lib/slice/htmlvar/yupput.finding.html */";
+        var FINDING_CONTAINER_CLASS = "ytilsYupputFinding";
 
         var valuesPrivate;
         var valuesPrivateWRendering;
-        var valuesPrivateWRenderingFiltered;
         var startValueDisplayed = 0;
 
         // General configuration settings.
@@ -143,16 +143,20 @@
         /**
          * Prepares all values to be rendered as html slice.
          */
-        var prepareAllValues = function() {
+        var prepareAllValuesAndAppendToBody = function() {
 
             var i;
             var god = Ytils.YupputHelper.god;
             var c = valuesPrivate.length;
+            var idI = Ytils.YupputHelper.createUniqueButUpcountableInitialId();
 
+            var findingsContainer = Ytils.YupputHtml.clearInnerHtmlAndGetElement(CONTAINER_FINDINGS_ID);
             valuesPrivateWRendering = [ ];
 
             for (i = 0; i < c; i += 1) {
 
+                var newFindingDiv;
+                var newFindingDivId;
                 var thumbail = god(valuesPrivate[i], DATA_KEY_THUMBNAIL);
                 var headline = god(valuesPrivate[i], DATA_KEY_HEADLINE);
                 var metaData = god(valuesPrivate[i], DATA_KEY_META_DATA);
@@ -163,6 +167,13 @@
                 valuesPrivateWRendering[i].headline = headline;
                 valuesPrivateWRendering[i].metaData = metaData;
                 valuesPrivateWRendering[i].html = itemHtml;
+                valuesPrivateWRendering[i].id = Ytils.YupputHelper.createUniqueFindingId(idI);
+                idI += 1;
+
+                newFindingDiv = Ytils.YupputHtml.createDivHtmlElementWIdAndClass(valuesPrivateWRendering[i].id, FINDING_CONTAINER_CLASS);
+                newFindingDiv = Ytils.YupputHtml.hideElement(newFindingDiv);
+
+                findingsContainer.append(newFindingDiv);
             }
         };
 
@@ -186,33 +197,30 @@
                 return headlineMatch || metaDataMatch;
             };
 
-            // Reset:
-            valuesPrivateWRenderingFiltered = [ ];
+            if (Ytils.YupputHelper.isNonEmptyString(inputValue)) {
 
-            // Empty input: Filtering not neccessary:
-            if (false === Ytils.YupputHelper.isNonEmptyString(inputValue)) {
-
-                valuesPrivateWRenderingFiltered = [ ];
-
-            } else {
-
-                var c = valuesPrivateWRendering.length;
                 var i;
+                var c = valuesPrivateWRendering.length;
+                var www = valuesPrivateWRendering[0];
+                /*
+                var renderedValue = valuesPrivateWRendering[i];
 
                 for (i = 0; i < c; i += 1) {
 
                     if (matchesHeadlineOrMetaData(valuesPrivateWRendering[i], inputValue)) {
 
-                        valuesPrivateWRenderingFiltered.push(valuesPrivateWRendering[i]);
+                        var a = 100;
                     }
                 }
+                 */
+            } else {
+
+                // display: none to all.
             }
         };
 
         var renderFilteredValues = function() {
 
-            // TODO
-            var a = 100;
             // Merke vorherige Anzahl Treffer?
             // Filtermenge ändert sich -> startValueDisplayed rückwärts auf nächsten Treffer
 
@@ -241,7 +249,7 @@
                 Ytils.YupputHtml.hide(CONTAINER_FINDINGS_DOWN_ID);
             };
 
-            if (valuesPrivateWRenderingFiltered.length === 0) {
+            if (false/*  || valuesPrivateWRenderingFiltered.length === 0*/) {
 
                 hideAllUpAndDownBtns();
 
@@ -270,7 +278,6 @@
             if (false === uiVisible) {
 
                 Ytils.YupputHtml.show(CONTAINER_ID);
-                prepareAllValues();
                 filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
                 handleUpDownBtns();
 
@@ -372,11 +379,12 @@
             ctrlShiftChar = ctrlShiftChar.toUpperCase();
 
             createInitialContainer();
+            valuesPrivate = values;
+            prepareAllValuesAndAppendToBody();
 
             Ytils.YupputHtml.expectExisting(INPUT_ID);
             initKeyListener();
 
-            valuesPrivate = values;
             initialized = true;
         };
 
@@ -402,7 +410,7 @@
         this.updateData = function(values) {
 
             valuesPrivate = values;
-            prepareAllValues();
+            prepareAllValuesAndAppendToBody();
         };
 
         /**
