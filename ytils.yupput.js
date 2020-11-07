@@ -12,6 +12,7 @@
      * @property {string} values.headline - The headline of the entry.
      * @property {string[]} values.metaData - An array of string to display meta data in the second row below the headline.
      * @property {string} [values.thumbnail] - Optional: The url to the thumbnail image.
+     * @property {string} [values.fullImage] - Optional: The url to to the full image. This will be ignored if no .thumbnail is given.
      * @property {string} values.value - The value to return to the callback if value[x] has been selected.
      */
 
@@ -36,6 +37,7 @@
      * @param {string} [config.hideOnEscape] - Whether to close Yupput dialogue on escape or not. Defaults to true.
      * @param {string} [config.maxItemCount] - The maximum number of items being displayed on the Yupput dialogue. Defaults to 5.
      * @param {string} [config.ctrlShiftChar] - The char that opens the Yupput dialogue, when hit together with Control and Shift. Defaults to "Y".
+     * @param {boolean} [config.preloadImages] - Whether to preload the images of the items passed into the constructor or not.
      * @param {string} [config.stopPropagateEnter] - Whether to stop propagation of enter when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {string} [config.stopPropagateEscape] - Whether to stop propagation of escape when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {function} [config.callbackBeforeShow] - Optional function callback before the Yupput dialogue opens.
@@ -58,6 +60,7 @@
         var DEFAULT_STOP_PROPAGATE_ENTER = false;
         var DEFAULT_STOP_PROPAGATE_ESCAPE = false;
         var DEFAULT_HIDE_ON_ESCAPE = true;
+        var DEFAULT_PRELOAD_IMAGES = false;
 
         // CSS IDs:
         var CONTAINER_ID = "ytilsYupputOuterContainer";
@@ -73,6 +76,9 @@
 
         var valuesPrivate;
         var valuesPrivateWRendering;
+        var valuesPrivateWRenderingMatching;
+        var valuesPrivateWRenderingNotMatching;
+        var valuesPrivateWRenderingMatchCount = 0;
         var startValueDisplayed = 0;
 
         // General configuration settings.
@@ -80,6 +86,7 @@
         var zIndex;
         var autoHide;
         var maxItemCount;
+        var preloadImages;
 
         // Event configuration settings:
         var stopPropagateEnter; // TODO
@@ -171,9 +178,23 @@
                 idI += 1;
 
                 newFindingDiv = Ytils.YupputHtml.createDivHtmlElementWIdAndClass(valuesPrivateWRendering[i].id, FINDING_CONTAINER_CLASS);
+                newFindingDiv.innerHTML = valuesPrivateWRendering[i].html;
                 newFindingDiv = Ytils.YupputHtml.hideElement(newFindingDiv);
 
                 findingsContainer.append(newFindingDiv);
+            }
+        };
+
+        var hideAllNonMatching = function() {
+
+            var targetedHtmlId;
+            var i;
+
+            var c = valuesPrivateWRenderingNotMatching.length;
+            for (i = 0; i < c; i += 1) {
+
+                targetedHtmlId = valuesPrivateWRenderingNotMatching[i].id;
+                Ytils.YupputHtml.hide(targetedHtmlId);
             }
         };
 
@@ -186,6 +207,11 @@
 
             var god = Ytils.YupputHelper.god;
 
+            // Reset matches:
+            valuesPrivateWRenderingMatchCount = 0;
+            valuesPrivateWRenderingMatching = [ ];
+            valuesPrivateWRenderingNotMatching = [ ];
+
             var matchesHeadlineOrMetaData = function(item, inputValue) {
 
                 var headlineHaystack = god(item, DATA_KEY_HEADLINE);
@@ -197,40 +223,27 @@
                 return headlineMatch || metaDataMatch;
             };
 
-            if (Ytils.YupputHelper.isNonEmptyString(inputValue)) {
+            var i;
+            var c = valuesPrivateWRendering.length;
 
-                var i;
-                var c = valuesPrivateWRendering.length;
-                var www = valuesPrivateWRendering[0];
-                /*
-                var renderedValue = valuesPrivateWRendering[i];
+            if (Ytils.YupputHelper.isNonEmptyString(inputValue)) {
 
                 for (i = 0; i < c; i += 1) {
 
                     if (matchesHeadlineOrMetaData(valuesPrivateWRendering[i], inputValue)) {
 
-                        var a = 100;
+                        valuesPrivateWRenderingMatching.push(valuesPrivateWRendering[i]);
+                        valuesPrivateWRenderingMatchCount += 1;
+                    } else {
+
+                        valuesPrivateWRenderingNotMatching.push(valuesPrivateWRendering[i]);
                     }
                 }
-                 */
             } else {
 
-                // display: none to all.
+                valuesPrivateWRenderingNotMatching = valuesPrivateWRendering;
+                hideAllNonMatching();
             }
-        };
-
-        var renderFilteredValues = function() {
-
-            // Merke vorherige Anzahl Treffer?
-            // Filtermenge ändert sich -> startValueDisplayed rückwärts auf nächsten Treffer
-
-            // startValueDisplayed
-        };
-
-        var filterAllValuesAndRender = function(inputValue) {
-
-            filterAllValues(inputValue);
-            renderFilteredValues();
         };
 
         var handleUpDownBtns = function() {
@@ -257,6 +270,52 @@
 
                 // TODO
             }
+        };
+
+        var showMatchingItemsAndHideNotMatchingItems = function() {
+
+            var targetedHtmlId;
+            var i;
+            var c;
+            var realStartValueDisplayed = startValueDisplayed;
+            var totalAmountMatches = valuesPrivateWRenderingMatching.length;
+
+            var showAllMatching = function() {
+
+                c = valuesPrivateWRenderingMatching.length;
+                for (i = 0; i < c; i += 1) {
+
+                    targetedHtmlId = valuesPrivateWRenderingMatching[i].id;
+                    Ytils.YupputHtml.show(targetedHtmlId);
+                }
+            };
+
+            // Rendering strategy:
+            // 1.) Hide all:
+            // 2.) If maxItemCount <= valuesPrivateWRenderingMatching.length -> show all
+            //     If maxItemCount > valuesPrivateWRenderingMatching
+            //          2a.) startValueDisplayed + maxItemCount <= valuesPrivateWRenderingMatching.length -> show all from startValueDisplayed.
+            //          2b.) startValueDisplayed + maxItemCount > valuesPrivateWRenderingMatching.length -> Reduce startValueDisplayed by overhang.
+            hideAllNonMatching();
+            if (totalAmountMatches <= maxItemCount) {
+
+                showAllMatching();
+
+            } else {
+
+                if (startValueDisplayed + maxItemCount <= valuesPrivateWRenderingMatching.length) {
+
+                    // TODO
+                    // showAllMatchingFromTo(startValueDisplayed, (startValueDisplayed + maxItemCount));
+                }
+
+            }
+        };
+
+        var filterAllValuesAndRender = function(inputValue) {
+
+            filterAllValues(inputValue);
+            showMatchingItemsAndHideNotMatchingItems();
         };
 
         /**
@@ -354,6 +413,25 @@
          */
         var construct = function(values) {
 
+            var preload = function() {
+
+                var i;
+                var c = valuesPrivate.length;
+
+                for (i = 0; i < c; i += 1) {
+
+                    if (Ytils.YupputHelper.isString(valuesPrivate[i].thumbnail)) {
+
+                        Ytils.YupputHtml.preloadImage(valuesPrivate[i].thumbnail);
+                    }
+
+                    if (Ytils.YupputHelper.isString(valuesPrivate[i].fullImage)) {
+
+                        Ytils.YupputHtml.preloadImage(valuesPrivate[i].fullImage);
+                    }
+                }
+            };
+
             var god = Ytils.YupputHelper.god;
 
             placeholder = god(config,"placeholder") || DEFAULT_PLACEHOLDER;
@@ -362,6 +440,7 @@
             maxItemCount = god(config,"maxItemCount") || DEFAULT_MAX_ITEM_COUNT;
             ctrlShiftChar = god(config,"ctrlShiftChar") || DEFAULT_CTRL_SHIFT_CHAR;
             hideOnEscape = god(config,"hideOnEscape") || DEFAULT_HIDE_ON_ESCAPE;
+            preloadImages = god(config,"preloadImages") || DEFAULT_PRELOAD_IMAGES;
             stopPropagateEnter = god(config,"stopPropagateEnter") || DEFAULT_STOP_PROPAGATE_ENTER;
             stopPropagateEscape = god(config,"stopPropagateEscape") || DEFAULT_STOP_PROPAGATE_ESCAPE;
 
@@ -384,6 +463,11 @@
 
             Ytils.YupputHtml.expectExisting(INPUT_ID);
             initKeyListener();
+
+            if (preloadImages) {
+
+                preload();
+            }
 
             initialized = true;
         };
