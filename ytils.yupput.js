@@ -19,12 +19,7 @@
     /**
      * The Yupput constructor.
      *
-     * @param {object[]} values - An array of objects with the following parameters:
-     * @param {string} values.headline - The headline of the entry.
-     * @param {string[]} values.metaData - An array of string to display meta data in the second row below the headline.
-     * @param {string} [values.thumbnail] - Optional: The url to the thumbnail image.
-     * @param {string} values.value - The value to return to the callback if value[x] has been selected.
-     *
+     * @param {YupputItem[]} values - An array of objects with the following parameters:
      * @param {inputCallback} callback - The callback function for selections on Yupput. Two parameters will be passed into this callback.
      * @callback inputCallback
      * @param {string} callback.value The value of the selected item that has been passed in into Yupput before.
@@ -74,40 +69,142 @@
         var FINDING_HTML_TEMPLATE = "/**jsmrg htmlvar escdoublequotes lib/slice/htmlvar/yupput.finding.html */";
         var FINDING_CONTAINER_CLASS = "ytilsYupputFinding";
 
+        var EMPTY = "";
+        var NO_FINDING_HIGHLIGHTED_VALUE = -1;
+
+        /**
+         * The main, outer container handle.
+         *
+         * @type HTMLObjectElement
+         */
+        var mainContainerHandle;
+
+        /**
+         * @type YupputItem[]
+         */
         var valuesPrivate;
+
+        /**
+         * @type YupputItem[]
+         */
         var valuesPrivateWRendering;
+
+        /**
+         * @type YupputItem[]
+         */
         var valuesPrivateWRenderingMatching;
+
+        /**
+         * @type YupputItem[]
+         */
         var valuesPrivateWRenderingNotMatching;
+
+        /**
+         * @type {number}
+         */
         var valuesPrivateWRenderingMatchCount = 0;
+
+        /**
+         * @type {number}
+         */
         var startValueDisplayed = 0;
 
         // General configuration settings.
+        /**
+         * @type {string}
+         */
         var placeholder;
+
+        /**
+         * @type {number}
+         */
         var zIndex;
+
+        /**
+         * @type {boolean}
+         */
         var autoHide;
+
+        /**
+         * @type {number}
+         */
         var maxItemCount;
+
+        /**
+         * @type {boolean}
+         */
         var preloadImages;
 
         // Event configuration settings:
+        /**
+         * @†ype {boolean}
+         */
         var stopPropagateEnter; // TODO
+
+        /**
+         * @†ype {boolean}
+         */
         var stopPropagateEscape; // TODO
+
+        /**
+         * @†ype {boolean}
+         */
         var hideOnEscape;
 
         // Callback functions:
+        /**
+         * @†ype {function}
+         */
         var callbackOnEscape = null;
+
+        /**
+         * @†ype {function}
+         */
         var callbackBeforeShow = null;
 
+        // (Temporary) status variables:
+        /**
+         * @†ype {boolean}
+         */
         var initialized = false;
-        var containerFindingsInnerHtml = "";
+
+        /**
+         * @†ype {string}
+         */
+        var containerFindingsInnerHtml = EMPTY;
+
+        /**
+         * @†ype {boolean}
+         */
         var uiVisible = false;
+
+        /**
+         * @†ype {string}
+         */
         var ctrlShiftChar;
 
         /**
-         * {object} selectedItem
-         * {string}
+         * Whether and when - which - YupputItem is selected by keyboard up/down. If -1: No selection.
+         *
+         * @type {number}
+         */
+        var keyboardSelectedItem = NO_FINDING_HIGHLIGHTED_VALUE;
+
+        /**
+         * The HTML ID of a YupputItem when hovered by mouse pointer.
+         *
+         * @type {string}
+         */
+        var highlightedFindingId = null;
+
+        /**
+         * {YupputItem} selectedItem
          */
         var selectedItem = null;
 
+        /**
+         * This function fires the callback passed into the constructor.
+         */
         var fireCallback = function() {
 
             callback(selectedItem, Ytils.YupputInput.getValueFromInput(INPUT_ID));
@@ -135,13 +232,13 @@
             if (yh.isNonEmptyString(headline)) {
                 findingHtml = findingHtml.replace("{{headline}}", headline);
             } else {
-                findingHtml = findingHtml.replace("{{headline}}", "");
+                findingHtml = findingHtml.replace("{{headline}}", EMPTY);
             }
 
             if (yh.isNonEmptyString(metaData)) {
                 findingHtml = findingHtml.replace("{{metaData}}", metaData);
             } else {
-                findingHtml = findingHtml.replace("{{metaData}}", "");
+                findingHtml = findingHtml.replace("{{metaData}}", EMPTY);
             }
 
             return findingHtml;
@@ -246,30 +343,30 @@
             }
         };
 
-        var handleUpDownBtns = function() {
+        /**
+         * Iterates over the matched items and assigns the iteration number to match the keyboard up-/down-count equivalent.
+         *
+         * @param {string} id
+         * @return {number}
+         */
+        var getKeyboardSelectedItemPositionByHtmlId = function(id) {
 
-            /*
-        var CONTAINER_FINDINGS_UP_ID = "ytilsYupputFindingsUpIndicator";
-        var CONTAINER_FINDINGS_DOWN_ID = "ytilsYupputFindingsDownIndicator";
-        var FINDINGS_UP_BTN_ID = "ytilsYupputFindingsUpBtn";
-        var FINDINGS_DOWN_BTN_ID = "ytilsYupputFindingsDownBtn";
-             */
+            var i;
+            var c = valuesPrivateWRenderingMatching.length;
+            if (c > maxItemCount) {
 
-            var hideAllUpAndDownBtns = function () {
-
-                Ytils.YupputHtml.hide(CONTAINER_FINDINGS_ID);
-                Ytils.YupputHtml.hide(CONTAINER_FINDINGS_UP_ID);
-                Ytils.YupputHtml.hide(CONTAINER_FINDINGS_DOWN_ID);
-            };
-
-            if (false/*  || valuesPrivateWRenderingFiltered.length === 0*/) {
-
-                hideAllUpAndDownBtns();
-
-            } else {
-
-                // TODO
+                 c = maxItemCount;
             }
+
+            for (i = 0; i < c; i += 1) {
+
+                if (valuesPrivateWRenderingMatching[i].id === id) {
+
+                    return i;
+                }
+            }
+
+            return NO_FINDING_HIGHLIGHTED_VALUE;
         };
 
         var showMatchingItemsAndHideNotMatchingItems = function() {
@@ -280,38 +377,85 @@
             var realStartValueDisplayed = startValueDisplayed;
             var totalAmountMatches = valuesPrivateWRenderingMatching.length;
 
+            /**
+             *
+             * @param item
+             */
+            var showMatchingItem = function(item) {
+
+                targetedHtmlId = item.id;
+                Ytils.YupputHtml.show(targetedHtmlId);
+            };
+
+            /**
+             * Shows all matching YupputItems.
+             */
             var showAllMatching = function() {
 
                 c = valuesPrivateWRenderingMatching.length;
                 for (i = 0; i < c; i += 1) {
 
-                    targetedHtmlId = valuesPrivateWRenderingMatching[i].id;
-                    Ytils.YupputHtml.show(targetedHtmlId);
+                    showMatchingItem(valuesPrivateWRenderingMatching[i]);
+                }
+            };
+
+            /**
+             * Shows matching subset of valuesPrivateWRenderingMatching with parameters from/to as array-indexes.
+             *
+             * @param {number} from
+             * @param {number} to
+             */
+            var showMatching = function(from, to) {
+
+                var i;
+                if (to >= valuesPrivateWRenderingMatching.length) {
+
+                    to = valuesPrivateWRenderingMatching.length;
+                }
+
+                for (i = from; i < to; i += 1) {
+
+                    showMatchingItem(valuesPrivateWRenderingMatching[i]);
                 }
             };
 
             // Rendering strategy:
+            //
             // 1.) Hide all:
-            // 2.) If maxItemCount <= valuesPrivateWRenderingMatching.length -> show all
-            //     If maxItemCount > valuesPrivateWRenderingMatching
+            // 2.) If maxItemCount >= totalAmountMatches -> show all
+            //     If maxItemCount < totalAmountMatches
             //          2a.) startValueDisplayed + maxItemCount <= valuesPrivateWRenderingMatching.length -> show all from startValueDisplayed.
             //          2b.) startValueDisplayed + maxItemCount > valuesPrivateWRenderingMatching.length -> Reduce startValueDisplayed by overhang.
+            // TODO: filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
+
             hideAllNonMatching();
-            if (totalAmountMatches <= maxItemCount) {
 
-                showAllMatching();
+            if (totalAmountMatches > 0) {
 
-            } else {
+                if (maxItemCount >= totalAmountMatches) {
 
-                if (startValueDisplayed + maxItemCount <= valuesPrivateWRenderingMatching.length) {
+                    showAllMatching();
 
-                    // TODO
-                    // showAllMatchingFromTo(startValueDisplayed, (startValueDisplayed + maxItemCount));
+                } else {
+
+                    if ((startValueDisplayed + maxItemCount) <= totalAmountMatches) {
+
+                        showMatching(startValueDisplayed, (startValueDisplayed + maxItemCount));
+                    }
                 }
-
             }
         };
 
+        /**
+         * This function has to be called whenever the displayed amount of YupputItems changes. This can happen by
+         *  - Change of the inputValue
+         *  - Navigation by up/down-buttons
+         *  Later options:
+         *  - Clicking the arrow indicators on the right
+         *  - Mouse wheel
+         *
+         * @param {string} inputValue
+         */
         var filterAllValuesAndRender = function(inputValue) {
 
             filterAllValues(inputValue);
@@ -338,7 +482,7 @@
 
                 Ytils.YupputHtml.show(CONTAINER_ID);
                 filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
-                handleUpDownBtns();
+                operateUpAndDownSelection();
 
                 setFocus();
                 uiVisible = true;
@@ -361,17 +505,60 @@
          */
         var createInitialContainer = function() {
 
-            Ytils.YupputHtml.createAndAppendIfNotExists(CONTAINER_ID);
+            mainContainerHandle = Ytils.YupputHtml.createAndAppendIfNotExists(CONTAINER_ID);
             Ytils.YupputHtml.hide(CONTAINER_ID);
 
             containerFindingsInnerHtml = "/**jsmrg htmlvar escdoublequotes lib/slice/htmlvar/yupput.container-inner-html-w-input.html %d%placeholder */";
             Ytils.YupputHtml.setInnerHtml(CONTAINER_ID, containerFindingsInnerHtml);
         };
 
+        var operateUpAndDownSelection = function(direction) {
+
+            var totalAmountMatches = valuesPrivateWRenderingMatching.length;
+
+            // Ignore direction: Always chose the first one.
+            if (startValueDisplayed <= NO_FINDING_HIGHLIGHTED_VALUE) {
+
+                startValueDisplayed = 0;
+
+            } else {
+
+                startValueDisplayed += direction;
+
+                if (startValueDisplayed < 0) {
+
+                    startValueDisplayed = 0;
+
+                } else {
+
+                    // totalAmountMatches
+                    //          2a.) startValueDisplayed + maxItemCount <= valuesPrivateWRenderingMatching.length -> show all from startValueDisplayed.
+                    //          2b.) startValueDisplayed + maxItemCount > valuesPrivateWRenderingMatching.length -> Reduce startValueDisplayed by overhang.
+                }
+            }
+            /*
+
+            var hideAllUpAndDownBtns = function () {
+
+                Ytils.YupputHtml.hide(CONTAINER_FINDINGS_ID);
+                Ytils.YupputHtml.hide(CONTAINER_FINDINGS_UP_ID);
+                Ytils.YupputHtml.hide(CONTAINER_FINDINGS_DOWN_ID);
+            };
+
+        var CONTAINER_FINDINGS_UP_ID = "ytilsYupputFindingsUpIndicator";
+        var CONTAINER_FINDINGS_DOWN_ID = "ytilsYupputFindingsDownIndicator";
+        var FINDINGS_UP_BTN_ID = "ytilsYupputFindingsUpBtn";
+        var FINDINGS_DOWN_BTN_ID = "ytilsYupputFindingsDownBtn";
+             */
+
+
+
+        };
+
         /**
          * Initializes keydown and -up events.
          */
-        var initKeyListener = function() {
+        var initKeyListeners = function() {
 
             document.addEventListener("keydown", (e) => {
 
@@ -397,9 +584,49 @@
 
                 } else {
 
+                    if (e.key === "ArrowDown") {
+
+                        operateUpAndDownSelection(1);
+
+                    } else if (e.key === "ArrowUp") {
+
+                        operateUpAndDownSelection(-1);
+                    }
+
                     filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
                 }
             };
+        };
+
+        /**
+         * Initializes mousemove-listeners on all YupputItems.
+         *
+         * @param {boolean} initial - Only initially the mouse-out-event for the surrounding findings-container is required.
+         */
+        var initMouseListeners = function(initial) {
+
+            var i;
+            var c = valuesPrivateWRendering.length;
+            var yupputFindingContainerHandle;
+
+            if (initial) {
+
+                document.getElementById(CONTAINER_FINDINGS_ID).addEventListener("mouseleave", function() {
+
+                    highlightedFindingId = null;
+                    keyboardSelectedItem = NO_FINDING_HIGHLIGHTED_VALUE;
+                });
+            }
+
+            for (i = 0; i < c; i += 1) {
+
+                yupputFindingContainerHandle = document.getElementById(valuesPrivateWRendering[i].id)
+                yupputFindingContainerHandle.addEventListener("mousemove", function(e) {
+
+                    highlightedFindingId = this.id;
+                    keyboardSelectedItem = getKeyboardSelectedItemPositionByHtmlId(this.id);
+                });
+            }
         };
 
         /**
@@ -462,7 +689,8 @@
             prepareAllValuesAndAppendToBody();
 
             Ytils.YupputHtml.expectExisting(INPUT_ID);
-            initKeyListener();
+            initKeyListeners();
+            initMouseListeners(true);
 
             if (preloadImages) {
 
@@ -495,6 +723,7 @@
 
             valuesPrivate = values;
             prepareAllValuesAndAppendToBody();
+            initMouseListeners(false);
         };
 
         /**
@@ -506,6 +735,6 @@
         };
 
         construct(values);
-    };
+    } ;
 
 }());

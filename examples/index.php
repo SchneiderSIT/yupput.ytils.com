@@ -17,27 +17,27 @@
             thumbnail: "https://rexmd.ytils.com/yupput/examples/img/kiel.jpg",
             value: "https://rexmd.ytils.com/yupput/examples/img/kiel.jpg"
         }, {
-            headline: "Flensburg",
+            headline: "Flensburg 1",
             metaData: "25.02.2019, Ostseee, Studienstadt, Deutschland",
             thumbnail: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg",
             value: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg"
         }, {
-            headline: "Flensbaaurg",
+            headline: "Flensbaaurg 2",
             metaData: "25.02.2019, Ostseee, Studienstadt, Deutschland",
             thumbnail: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg",
             value: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg"
         }, {
-            headline: "Flensbabburg",
+            headline: "Flensbabburg 3",
             metaData: "25.02.2019, Ostseee, Studienstadt, Deutschland",
             thumbnail: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg",
             value: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg"
         }, {
-            headline: "Flensbabbburg",
+            headline: "Flensbabbburg 4",
             metaData: "25.02.2019, Ostseee, Studienstadt, Deutschland",
             thumbnail: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg",
             value: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg"
         }, {
-            headline: "Flensbbburg",
+            headline: "Flensbbburg 5",
             metaData: "25.02.2019, Ostseee, Studienstadt, Deutschland",
             thumbnail: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg",
             value: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg"
@@ -56,7 +56,7 @@
 
     var ready = function () {
 
-        var yupput = new Ytils.Yupput(sampleData, function(value, inputValue) { alert(inputValue); }, { placeholder: "Suchbegriff", maxItemCount: 5, preloadImages: true });
+        var yupput = new Ytils.Yupput(sampleData, function(value, inputValue) { alert(inputValue); }, { placeholder: "Suchbegriff", maxItemCount: 3, preloadImages: true });
         // yupput.show();
     };
 
