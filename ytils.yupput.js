@@ -374,7 +374,6 @@
             var targetedHtmlId;
             var i;
             var c;
-            var realStartValueDisplayed = startValueDisplayed;
             var totalAmountMatches = valuesPrivateWRenderingMatching.length;
 
             /**
@@ -426,21 +425,29 @@
             //     If maxItemCount < totalAmountMatches
             //          2a.) startValueDisplayed + maxItemCount <= valuesPrivateWRenderingMatching.length -> show all from startValueDisplayed.
             //          2b.) startValueDisplayed + maxItemCount > valuesPrivateWRenderingMatching.length -> Reduce startValueDisplayed by overhang.
-            // TODO: filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
 
             hideAllNonMatching();
 
+            var backShiftedStartValue;
             if (totalAmountMatches > 0) {
 
                 if (maxItemCount >= totalAmountMatches) {
 
+                    console.log("showAllMatching()");
                     showAllMatching();
 
                 } else {
 
-                    if ((startValueDisplayed + maxItemCount) <= totalAmountMatches) {
+                    if ((startValueDisplayed + maxItemCount) < totalAmountMatches) {
 
+                        console.log("showMatching(" + startValueDisplayed + ", " + (startValueDisplayed + maxItemCount) + ")");
                         showMatching(startValueDisplayed, (startValueDisplayed + maxItemCount));
+
+                    } else {
+
+                        backShiftedStartValue = totalAmountMatches - maxItemCount;
+                        console.log("showMatching(" + backShiftedStartValue + ", " + (totalAmountMatches - 1) + ")");
+                        showMatching(backShiftedStartValue, (totalAmountMatches - 1));
                     }
                 }
             }
@@ -515,29 +522,20 @@
         var operateUpAndDownSelection = function(direction) {
 
             var totalAmountMatches = valuesPrivateWRenderingMatching.length;
+            startValueDisplayed += direction;
 
             // Ignore direction: Always chose the first one.
             if (startValueDisplayed <= NO_FINDING_HIGHLIGHTED_VALUE) {
 
                 startValueDisplayed = 0;
 
-            } else {
+            } else if (startValueDisplayed >= totalAmountMatches) {
 
-                startValueDisplayed += direction;
-
-                if (startValueDisplayed < 0) {
-
-                    startValueDisplayed = 0;
-
-                } else {
-
-                    // totalAmountMatches
-                    //          2a.) startValueDisplayed + maxItemCount <= valuesPrivateWRenderingMatching.length -> show all from startValueDisplayed.
-                    //          2b.) startValueDisplayed + maxItemCount > valuesPrivateWRenderingMatching.length -> Reduce startValueDisplayed by overhang.
-                }
+                startValueDisplayed = totalAmountMatches - 1;
             }
-            /*
 
+            /*
+            TODO --> Arrows and highlighting
             var hideAllUpAndDownBtns = function () {
 
                 Ytils.YupputHtml.hide(CONTAINER_FINDINGS_ID);
@@ -550,9 +548,6 @@
         var FINDINGS_UP_BTN_ID = "ytilsYupputFindingsUpBtn";
         var FINDINGS_DOWN_BTN_ID = "ytilsYupputFindingsDownBtn";
              */
-
-
-
         };
 
         /**
@@ -564,6 +559,7 @@
 
                 if (e.ctrlKey && e.shiftKey && e.key === ctrlShiftChar) {
 
+                    e.stopPropagation();
                     showPrivate();
                 }
             });
@@ -586,14 +582,20 @@
 
                     if (e.key === "ArrowDown") {
 
+                        console.log("operateUpAndDownSelection(1);");
                         operateUpAndDownSelection(1);
 
                     } else if (e.key === "ArrowUp") {
 
+                        console.log("operateUpAndDownSelection(-1);");
                         operateUpAndDownSelection(-1);
                     }
 
-                    filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
+                    if (false === e.ctrlKey) {
+
+                        console.log("elselsekey");
+                        filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
+                    }
                 }
             };
         };

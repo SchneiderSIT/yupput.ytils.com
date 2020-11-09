@@ -17,27 +17,37 @@
             thumbnail: "https://rexmd.ytils.com/yupput/examples/img/kiel.jpg",
             value: "https://rexmd.ytils.com/yupput/examples/img/kiel.jpg"
         }, {
-            headline: "Flensburg 1",
+            headline: "Flensburg 1/7",
             metaData: "25.02.2019, Ostseee, Studienstadt, Deutschland",
             thumbnail: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg",
             value: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg"
         }, {
-            headline: "Flensbaaurg 2",
+            headline: "Flensburg 2/7",
             metaData: "25.02.2019, Ostseee, Studienstadt, Deutschland",
             thumbnail: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg",
             value: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg"
         }, {
-            headline: "Flensbabburg 3",
+            headline: "Flensburg 3/7",
             metaData: "25.02.2019, Ostseee, Studienstadt, Deutschland",
             thumbnail: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg",
             value: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg"
         }, {
-            headline: "Flensbabbburg 4",
+            headline: "Flensburg 4/7",
             metaData: "25.02.2019, Ostseee, Studienstadt, Deutschland",
             thumbnail: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg",
             value: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg"
         }, {
-            headline: "Flensbbburg 5",
+            headline: "Flensburg 5/7",
+            metaData: "25.02.2019, Ostseee, Studienstadt, Deutschland",
+            thumbnail: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg",
+            value: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg"
+        }, {
+            headline: "Flensburg 6/7",
+            metaData: "25.02.2019, Ostseee, Studienstadt, Deutschland",
+            thumbnail: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg",
+            value: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg"
+        }, {
+            headline: "Flensburg 7/7",
             metaData: "25.02.2019, Ostseee, Studienstadt, Deutschland",
             thumbnail: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg",
             value: "https://rexmd.ytils.com/yupput/examples/img/flensburg.jpg"
