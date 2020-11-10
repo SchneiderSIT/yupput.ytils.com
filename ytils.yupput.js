@@ -282,6 +282,23 @@
             }
         };
 
+        var hideAllNotInRange = function(lowerBound, upperBound) {
+
+            var targetedHtmlId;
+            var i;
+
+            var c = valuesPrivateWRenderingNotMatching.length;
+            for (i = 0; i < c; i += 1) {
+
+                if (i < lowerBound || i > upperBound) {
+
+                    console.log("Hiding: " + i + ": " + valuesPrivateWRenderingNotMatching[i].headline);
+                    targetedHtmlId = valuesPrivateWRenderingNotMatching[i].id;
+                    Ytils.YupputHtml.hide(targetedHtmlId);
+                }
+            }
+        };
+
         var hideAllNonMatching = function() {
 
             var targetedHtmlId;
@@ -394,6 +411,7 @@
                 c = valuesPrivateWRenderingMatching.length;
                 for (i = 0; i < c; i += 1) {
 
+                    console.log("showAllMatching(0, " + c + ")");
                     showMatchingItem(valuesPrivateWRenderingMatching[i]);
                 }
             };
@@ -441,12 +459,14 @@
                     if ((startValueDisplayed + maxItemCount) < totalAmountMatches) {
 
                         console.log("showMatching(" + startValueDisplayed + ", " + (startValueDisplayed + maxItemCount) + ")");
+                        hideAllNotInRange(startValueDisplayed, (startValueDisplayed + maxItemCount));
                         showMatching(startValueDisplayed, (startValueDisplayed + maxItemCount));
 
                     } else {
 
                         backShiftedStartValue = totalAmountMatches - maxItemCount;
                         console.log("showMatching(" + backShiftedStartValue + ", " + (totalAmountMatches - 1) + ")");
+                        hideAllNotInRange(backShiftedStartValue, (totalAmountMatches - 1));
                         showMatching(backShiftedStartValue, (totalAmountMatches - 1));
                     }
                 }
@@ -489,7 +509,6 @@
 
                 Ytils.YupputHtml.show(CONTAINER_ID);
                 filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
-                operateUpAndDownSelection();
 
                 setFocus();
                 uiVisible = true;
@@ -557,10 +576,13 @@
 
             document.addEventListener("keydown", (e) => {
 
-                if (e.ctrlKey && e.shiftKey && e.key === ctrlShiftChar) {
+                if (false === uiVisible) {
 
-                    e.stopPropagation();
-                    showPrivate();
+                    if (e.ctrlKey && e.shiftKey && e.key === ctrlShiftChar) {
+
+                        e.stopPropagation();
+                        showPrivate();
+                    }
                 }
             });
 
