@@ -282,34 +282,32 @@
             }
         };
 
-        var hideAllNotInRange = function(lowerBound, upperBound) {
+        /**
+         * Hides a given array of YupputItems.
+         *
+         * @param {YupputItem[]} items
+         */
+        var hideYupputItems = function(items) {
 
             var targetedHtmlId;
             var i;
 
-            var c = valuesPrivateWRenderingNotMatching.length;
+            var c = items.length;
             for (i = 0; i < c; i += 1) {
 
-                if (i < lowerBound || i > upperBound) {
-
-                    console.log("Hiding: " + i + ": " + valuesPrivateWRenderingNotMatching[i].headline);
-                    targetedHtmlId = valuesPrivateWRenderingNotMatching[i].id;
-                    Ytils.YupputHtml.hide(targetedHtmlId);
-                }
+                targetedHtmlId = items[i].id;
+                Ytils.YupputHtml.hide(targetedHtmlId);
             }
+        };
+
+        var hideAll = function() {
+
+            hideYupputItems(valuesPrivateWRendering);
         };
 
         var hideAllNonMatching = function() {
 
-            var targetedHtmlId;
-            var i;
-
-            var c = valuesPrivateWRenderingNotMatching.length;
-            for (i = 0; i < c; i += 1) {
-
-                targetedHtmlId = valuesPrivateWRenderingNotMatching[i].id;
-                Ytils.YupputHtml.hide(targetedHtmlId);
-            }
+            hideYupputItems(valuesPrivateWRenderingNotMatching);
         };
 
         /**
@@ -411,7 +409,7 @@
                 c = valuesPrivateWRenderingMatching.length;
                 for (i = 0; i < c; i += 1) {
 
-                    console.log("showAllMatching(0, " + c + ")");
+                    // console.log("showAllMatching(0, " + c + ")");
                     showMatchingItem(valuesPrivateWRenderingMatching[i]);
                 }
             };
@@ -444,33 +442,34 @@
             //          2a.) startValueDisplayed + maxItemCount <= valuesPrivateWRenderingMatching.length -> show all from startValueDisplayed.
             //          2b.) startValueDisplayed + maxItemCount > valuesPrivateWRenderingMatching.length -> Reduce startValueDisplayed by overhang.
 
-            hideAllNonMatching();
+            // console.log("hideAll()")
+            hideAll();
 
             var backShiftedStartValue;
             if (totalAmountMatches > 0) {
 
                 if (maxItemCount >= totalAmountMatches) {
 
-                    console.log("showAllMatching()");
+                    // console.log("showAllMatching()");
                     showAllMatching();
 
                 } else {
 
-                    if ((startValueDisplayed + maxItemCount) < totalAmountMatches) {
+                    if ((startValueDisplayed + maxItemCount) <= totalAmountMatches) {
 
-                        console.log("showMatching(" + startValueDisplayed + ", " + (startValueDisplayed + maxItemCount) + ")");
-                        hideAllNotInRange(startValueDisplayed, (startValueDisplayed + maxItemCount));
+                        // console.log("showMatching a(" + startValueDisplayed + ", " + (startValueDisplayed + maxItemCount) + ")");
                         showMatching(startValueDisplayed, (startValueDisplayed + maxItemCount));
 
                     } else {
 
                         backShiftedStartValue = totalAmountMatches - maxItemCount;
-                        console.log("showMatching(" + backShiftedStartValue + ", " + (totalAmountMatches - 1) + ")");
-                        hideAllNotInRange(backShiftedStartValue, (totalAmountMatches - 1));
-                        showMatching(backShiftedStartValue, (totalAmountMatches - 1));
+                        // console.log("showMatching b(" + backShiftedStartValue + ", " + totalAmountMatches + ")");
+                        showMatching(backShiftedStartValue, totalAmountMatches);
                     }
                 }
             }
+
+            console.log("Highlighting: " + startValueDisplayed);
         };
 
         /**
@@ -604,18 +603,18 @@
 
                     if (e.key === "ArrowDown") {
 
-                        console.log("operateUpAndDownSelection(1);");
+                        // console.log("operateUpAndDownSelection(1);");
                         operateUpAndDownSelection(1);
 
                     } else if (e.key === "ArrowUp") {
 
-                        console.log("operateUpAndDownSelection(-1);");
+                        // console.log("operateUpAndDownSelection(-1);");
                         operateUpAndDownSelection(-1);
                     }
 
                     if (false === e.ctrlKey) {
 
-                        console.log("elselsekey");
+                        // console.log("elselsekey");
                         filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
                     }
                 }
@@ -639,6 +638,8 @@
 
                     highlightedFindingId = null;
                     keyboardSelectedItem = NO_FINDING_HIGHLIGHTED_VALUE;
+
+                    console.log("keyboardSelectedItem: " + keyboardSelectedItem);
                 });
             }
 
@@ -649,6 +650,8 @@
 
                     highlightedFindingId = this.id;
                     keyboardSelectedItem = getKeyboardSelectedItemPositionByHtmlId(this.id);
+
+                    console.log("keyboardSelectedItem: " + keyboardSelectedItem);
                 });
             }
         };
