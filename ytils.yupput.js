@@ -33,6 +33,9 @@
      * @param {string} [config.maxItemCount] - The maximum number of items being displayed on the Yupput dialogue. Defaults to 5.
      * @param {string} [config.ctrlShiftChar] - The char that opens the Yupput dialogue, when hit together with Control and Shift. Defaults to "Y".
      * @param {boolean} [config.preloadImages] - Whether to preload the images of the items passed into the constructor or not.
+     * @param {boolean} [config.matchOnlyHeadline] - Whether to find matches only over the headline value and not within meta data. Defaults to false.
+     * @param {boolean} [config.containsForHeadlineMatches] - Whether to use contains for headline matching instead of starts-with-check. Defaults to false.
+     * @param {boolean} [config.containsForMetaMatches] - Whether to use contains for meta string matching instead of starts-with-check. Defaults to false.
      * @param {string} [config.stopPropagateEnter] - Whether to stop propagation of enter when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {string} [config.stopPropagateEscape] - Whether to stop propagation of escape when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {function} [config.callbackBeforeShow] - Optional function callback before the Yupput dialogue opens.
@@ -44,7 +47,7 @@
         var DATA_KEY_HEADLINE = "headline";
         var DATA_KEY_META_DATA = "metaData";
         var DATA_KEY_THUMBNAIL = "thumbnail";
-        var DATA_KEY_VALUE = "value";
+        var DATA_KEY_VALUE = "value"; // TODO Callback
 
         // Configuration defaults:
         var DEFAULT_PLACEHOLDER = "Search value";
@@ -56,6 +59,9 @@
         var DEFAULT_STOP_PROPAGATE_ESCAPE = false;
         var DEFAULT_HIDE_ON_ESCAPE = true;
         var DEFAULT_PRELOAD_IMAGES = false;
+        var DEFAULT_MATCH_ONLY_HEADLINE = false;
+        var DEFAULT_CONTAINS_FOR_HEADLINE_MATCHES = false;
+        var DEFAULT_CONTAINS_FOR_META_MATCHES = false;
 
         // CSS IDs:
         var CONTAINER_ID = "ytilsYupputOuterContainer";
@@ -135,16 +141,21 @@
          */
         var preloadImages;
 
+        /**
+         * @type {boolean}
+         */
+        var matchOnlyHeadline;
+
         // Event configuration settings:
         /**
          * @†ype {boolean}
          */
-        var stopPropagateEnter; // TODO
+        var stopPropagateEnter;
 
         /**
          * @†ype {boolean}
          */
-        var stopPropagateEscape; // TODO
+        var stopPropagateEscape;
 
         /**
          * @†ype {boolean}
@@ -155,18 +166,37 @@
         /**
          * @†ype {function}
          */
-        var callbackOnEscape = null;
+        var callbackOnEscape = null; // TODO
 
         /**
          * @†ype {function}
          */
-        var callbackBeforeShow = null;
+        var callbackBeforeShow = null;  // TODO
 
-        // (Temporary) status variables:
         /**
          * @†ype {boolean}
          */
         var initialized = false;
+
+        /**
+         * @†ype {boolean}
+         */
+        var containsForHeadlineMatches;
+
+        /**
+         * @†ype {boolean}
+         */
+        var containsForMetaMatches;
+
+        /**
+         * @†ype {function}
+         */
+        var matchForHeadlineMatchesCallback = Ytils.YupputHelper.isStringStartingWith;
+
+        /**
+         * @†ype {function}
+         */
+        var matchForMetaMatchesCallback = Ytils.YupputHelper.isStringStartingWith;
 
         /**
          * @†ype {string}
@@ -203,11 +233,72 @@
         var selectedItem = null;
 
         /**
+         * @type {string}
+         */
+        var bottomLineCssText = null;
+
+        /**
          * This function fires the callback passed into the constructor.
          */
-        var fireCallback = function() {
+        var fireInputCallback = function() {
 
             callback(selectedItem, Ytils.YupputInput.getValueFromInput(INPUT_ID));
+        };
+
+        /**
+         * Depending on current active state, up/down buttons can be made
+         * visible or invisible.
+         */
+        var displayOrHideDownButton = function() {
+
+            var yhtml = Ytils.YupputHtml;
+
+            var upArrowContainer = document.getElementById(CONTAINER_FINDINGS_UP_ID);
+            var downArrowContainer = document.getElementById(CONTAINER_FINDINGS_DOWN_ID);
+            var upArrowElem = document.getElementById(FINDINGS_UP_BTN_ID);
+            var downArrowElem = document.getElementById(FINDINGS_DOWN_BTN_ID);
+
+            var operateUpDownButtonVisibility = function() {
+
+                yhtml.showElement(upArrowContainer);
+                yhtml.showElement(downArrowContainer);
+
+                if (startValueDisplayed > 0) {
+
+                    yhtml.visibleElement(upArrowElem);
+
+                } else {
+
+                    yhtml.invisibleElement(upArrowElem);
+                }
+
+                if (!(startValueDisplayed + 1 >= valuesPrivateWRenderingMatching.length)) {
+
+                    yhtml.visibleElement(downArrowElem);
+
+                } else {
+
+                    yhtml.invisibleElement(downArrowElem);
+                }
+            };
+
+            if (!valuesPrivateWRenderingMatching.length) {
+
+                yhtml.hideElement(upArrowContainer);
+                yhtml.hideElement(downArrowContainer);
+
+            } else {
+
+                if (maxItemCount > valuesPrivateWRenderingMatching.length) {
+
+                    yhtml.invisibleElement(upArrowElem);
+                    yhtml.invisibleElement(downArrowElem);
+
+                } else {
+
+                    operateUpDownButtonVisibility();
+                }
+            }
         };
 
         /**
@@ -260,7 +351,6 @@
             for (i = 0; i < c; i += 1) {
 
                 var newFindingDiv;
-                var newFindingDivId;
                 var thumbail = god(valuesPrivate[i], DATA_KEY_THUMBNAIL);
                 var headline = god(valuesPrivate[i], DATA_KEY_HEADLINE);
                 var metaData = god(valuesPrivate[i], DATA_KEY_META_DATA);
@@ -329,8 +419,13 @@
                 var headlineHaystack = god(item, DATA_KEY_HEADLINE);
                 var metaDataHaystack = god(item, DATA_KEY_META_DATA);
 
-                var headlineMatch = Ytils.YupputHelper.isStringStartingWith(headlineHaystack, inputValue);
-                var metaDataMatch = Ytils.YupputHelper.isStringStartingWith(metaDataHaystack, inputValue);
+                var headlineMatch = matchForHeadlineMatchesCallback(headlineHaystack, inputValue);
+                var metaDataMatch = false;
+
+                if (false === matchOnlyHeadline) {
+
+                    metaDataMatch = matchForMetaMatchesCallback(metaDataHaystack, inputValue);
+                }
 
                 return headlineMatch || metaDataMatch;
             };
@@ -384,6 +479,12 @@
             return NO_FINDING_HIGHLIGHTED_VALUE;
         };
 
+        /**
+         * This function iterates over all YupputItems and shows or hides them.
+         * This function also (re-)displays the bottom line
+         *
+         * border-bottom: #b6b6b6 solid 1px
+         */
         var showMatchingItemsAndHideNotMatchingItems = function() {
 
             var targetedHtmlId;
@@ -392,13 +493,34 @@
             var totalAmountMatches = valuesPrivateWRenderingMatching.length;
 
             /**
+             * Shows a matching item and assigns bottomLineCssText if it did not happen yet.
+             * The value for bottomLineCssText will be retrieved from the computed style. This is for the case
+             * Yupput's CSS is overwritten by someone.
              *
-             * @param item
+             * @param {YupputItem} item
              */
             var showMatchingItem = function(item) {
 
-                targetedHtmlId = item.id;
-                Ytils.YupputHtml.show(targetedHtmlId);
+                var elementHandle = Ytils.YupputHtml.show(item.id);
+
+                if (null === bottomLineCssText) {
+
+                    bottomLineCssText = Ytils.YupputHtml.getCssFromElement(item.id, "border-bottom");
+                }
+
+                elementHandle.style.borderBottom = bottomLineCssText;
+            };
+
+            /**
+             * Removes the bottom line for the last matching item. This will be repaired on every item
+             * being shown - everytime. Therefore this function can only be called after rendering is done.
+             *
+             * @param {YupputItem} lastItem
+             */
+            var removeBottomLineFromLastDisplayedItem = function(lastItem) {
+
+                var elementHandle = document.getElementById(lastItem.id);
+                elementHandle.style.borderBottom = "none";
             };
 
             /**
@@ -409,8 +531,12 @@
                 c = valuesPrivateWRenderingMatching.length;
                 for (i = 0; i < c; i += 1) {
 
-                    // console.log("showAllMatching(0, " + c + ")");
                     showMatchingItem(valuesPrivateWRenderingMatching[i]);
+
+                    if (i === (c - 1)) {
+
+                        removeBottomLineFromLastDisplayedItem(valuesPrivateWRenderingMatching[i]);
+                    }
                 }
             };
 
@@ -431,6 +557,11 @@
                 for (i = from; i < to; i += 1) {
 
                     showMatchingItem(valuesPrivateWRenderingMatching[i]);
+
+                    if (i === (to - 1)) {
+
+                        removeBottomLineFromLastDisplayedItem(valuesPrivateWRenderingMatching[i]);
+                    }
                 }
             };
 
@@ -441,8 +572,6 @@
             //     If maxItemCount < totalAmountMatches
             //          2a.) startValueDisplayed + maxItemCount <= valuesPrivateWRenderingMatching.length -> show all from startValueDisplayed.
             //          2b.) startValueDisplayed + maxItemCount > valuesPrivateWRenderingMatching.length -> Reduce startValueDisplayed by overhang.
-
-            // console.log("hideAll()")
             hideAll();
 
             var backShiftedStartValue;
@@ -450,26 +579,23 @@
 
                 if (maxItemCount >= totalAmountMatches) {
 
-                    // console.log("showAllMatching()");
                     showAllMatching();
 
                 } else {
 
                     if ((startValueDisplayed + maxItemCount) <= totalAmountMatches) {
 
-                        // console.log("showMatching a(" + startValueDisplayed + ", " + (startValueDisplayed + maxItemCount) + ")");
                         showMatching(startValueDisplayed, (startValueDisplayed + maxItemCount));
 
                     } else {
 
                         backShiftedStartValue = totalAmountMatches - maxItemCount;
-                        // console.log("showMatching b(" + backShiftedStartValue + ", " + totalAmountMatches + ")");
                         showMatching(backShiftedStartValue, totalAmountMatches);
                     }
                 }
             }
 
-            console.log("Highlighting: " + startValueDisplayed);
+            // TODO: Fix last line
         };
 
         /**
@@ -486,6 +612,7 @@
 
             filterAllValues(inputValue);
             showMatchingItemsAndHideNotMatchingItems();
+            displayOrHideDownButton();
         };
 
         /**
@@ -537,10 +664,34 @@
             Ytils.YupputHtml.setInnerHtml(CONTAINER_ID, containerFindingsInnerHtml);
         };
 
+        var clearAllHighlightings = function() {
+
+            // TODO
+            console.log("clearAllHighlightings");
+        };
+
+        var highlightStartValueDisplayed = function() {
+
+            // TODO
+            console.log("highlightStartValueDisplayed " + startValueDisplayed);
+        };
+
+        /**
+         *
+         * @param {number} direction
+         */
         var operateUpAndDownSelection = function(direction) {
 
             var totalAmountMatches = valuesPrivateWRenderingMatching.length;
-            startValueDisplayed += direction;
+
+            if (keyboardSelectedItem !== NO_FINDING_HIGHLIGHTED_VALUE) {
+
+                startValueDisplayed = keyboardSelectedItem += direction;
+
+            } else {
+
+                startValueDisplayed += direction;
+            }
 
             // Ignore direction: Always chose the first one.
             if (startValueDisplayed <= NO_FINDING_HIGHLIGHTED_VALUE) {
@@ -552,20 +703,8 @@
                 startValueDisplayed = totalAmountMatches - 1;
             }
 
-            /*
-            TODO --> Arrows and highlighting
-            var hideAllUpAndDownBtns = function () {
-
-                Ytils.YupputHtml.hide(CONTAINER_FINDINGS_ID);
-                Ytils.YupputHtml.hide(CONTAINER_FINDINGS_UP_ID);
-                Ytils.YupputHtml.hide(CONTAINER_FINDINGS_DOWN_ID);
-            };
-
-        var CONTAINER_FINDINGS_UP_ID = "ytilsYupputFindingsUpIndicator";
-        var CONTAINER_FINDINGS_DOWN_ID = "ytilsYupputFindingsDownIndicator";
-        var FINDINGS_UP_BTN_ID = "ytilsYupputFindingsUpBtn";
-        var FINDINGS_DOWN_BTN_ID = "ytilsYupputFindingsDownBtn";
-             */
+            displayOrHideDownButton();
+            highlightStartValueDisplayed();
         };
 
         /**
@@ -575,12 +714,16 @@
 
             document.addEventListener("keydown", (e) => {
 
-                if (false === uiVisible) {
+                if (e.ctrlKey && e.shiftKey && e.key === ctrlShiftChar) {
 
-                    if (e.ctrlKey && e.shiftKey && e.key === ctrlShiftChar) {
+                    if (false === uiVisible) {
 
                         e.stopPropagation();
                         showPrivate();
+
+                    } else {
+
+                        setFocus();
                     }
                 }
             });
@@ -592,29 +735,36 @@
 
                     hidePrivate();
 
+                    if (stopPropagateEscape) {
+
+                        e.stopPropagation();
+                    }
+
                 } else if (e.key === "Enter") {
 
                     if (uiVisible) {
 
-                        fireCallback();
+                        fireInputCallback();
+                    }
+
+                    if (stopPropagateEnter) {
+
+                        e.stopPropagation();
                     }
 
                 } else {
 
                     if (e.key === "ArrowDown") {
 
-                        // console.log("operateUpAndDownSelection(1);");
                         operateUpAndDownSelection(1);
 
                     } else if (e.key === "ArrowUp") {
 
-                        // console.log("operateUpAndDownSelection(-1);");
                         operateUpAndDownSelection(-1);
                     }
 
                     if (false === e.ctrlKey) {
 
-                        // console.log("elselsekey");
                         filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
                     }
                 }
@@ -630,6 +780,7 @@
 
             var i;
             var c = valuesPrivateWRendering.length;
+            var previousKeyboardSelectedItem = null;
             var yupputFindingContainerHandle;
 
             if (initial) {
@@ -638,8 +789,7 @@
 
                     highlightedFindingId = null;
                     keyboardSelectedItem = NO_FINDING_HIGHLIGHTED_VALUE;
-
-                    console.log("keyboardSelectedItem: " + keyboardSelectedItem);
+                    previousKeyboardSelectedItem = null;
                 });
             }
 
@@ -651,7 +801,12 @@
                     highlightedFindingId = this.id;
                     keyboardSelectedItem = getKeyboardSelectedItemPositionByHtmlId(this.id);
 
-                    console.log("keyboardSelectedItem: " + keyboardSelectedItem);
+                    // We do not want that to happen on every mousemove-tick.
+                    if (null !== previousKeyboardSelectedItem && previousKeyboardSelectedItem !== keyboardSelectedItem) {
+
+                        previousKeyboardSelectedItem = keyboardSelectedItem;
+                        clearAllHighlightings();
+                    }
                 });
             }
         };
@@ -695,8 +850,18 @@
             ctrlShiftChar = god(config,"ctrlShiftChar") || DEFAULT_CTRL_SHIFT_CHAR;
             hideOnEscape = god(config,"hideOnEscape") || DEFAULT_HIDE_ON_ESCAPE;
             preloadImages = god(config,"preloadImages") || DEFAULT_PRELOAD_IMAGES;
+            matchOnlyHeadline = god(config,"matchOnlyHeadline") || DEFAULT_MATCH_ONLY_HEADLINE;
             stopPropagateEnter = god(config,"stopPropagateEnter") || DEFAULT_STOP_PROPAGATE_ENTER;
             stopPropagateEscape = god(config,"stopPropagateEscape") || DEFAULT_STOP_PROPAGATE_ESCAPE;
+            containsForHeadlineMatches = god(config,"containsForHeadlineMatches") || DEFAULT_CONTAINS_FOR_HEADLINE_MATCHES;
+            containsForMetaMatches = god(config,"containsForMetaMatches") || DEFAULT_CONTAINS_FOR_META_MATCHES;
+
+            if (containsForHeadlineMatches) {
+                matchForHeadlineMatchesCallback = Ytils.YupputHelper.isStringContaining;
+            }
+            if (containsForMetaMatches) {
+                matchForMetaMatchesCallback = Ytils.YupputHelper.isStringContaining;
+            }
 
             // Check callback parameter:
             Ytils.YupputHelper.expectFunction(callback, "Ytils.Yupput expects parameter callback to be a function.");

@@ -66,7 +66,12 @@
 
     var ready = function () {
 
-        var yupput = new Ytils.Yupput(sampleData, function(value, inputValue) { alert(inputValue); }, { placeholder: "Suchbegriff", maxItemCount: 3, preloadImages: true });
+        var yupput = new Ytils.Yupput(sampleData, function(value, inputValue) { alert(inputValue); }, {
+            placeholder: "Suchbegriff",
+            maxItemCount: 5,
+            preloadImages: true,
+            containsForMetaMatches: true
+        });
         // yupput.show();
     };
 
