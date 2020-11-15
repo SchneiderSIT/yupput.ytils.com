@@ -72,8 +72,12 @@
         var FINDINGS_UP_BTN_ID = "ytilsYupputFindingsUpBtn";
         var FINDINGS_DOWN_BTN_ID = "ytilsYupputFindingsDownBtn";
 
-        var FINDING_HTML_TEMPLATE = "/**jsmrg htmlvar escdoublequotes lib/slice/htmlvar/yupput.finding.html */";
+        // CSS classes:
         var FINDING_CONTAINER_CLASS = "ytilsYupputFinding";
+        var FINDING_HOVER_AND_SELECTION_CLASS = "ytilsYupputFindingHighlighted";
+
+        // HTML templates:
+        var FINDING_HTML_TEMPLATE = "/**jsmrg htmlvar escdoublequotes lib/slice/htmlvar/yupput.finding.html */";
 
         var EMPTY = "";
         var NO_FINDING_HIGHLIGHTED_VALUE = -1;
@@ -214,23 +218,9 @@
         var ctrlShiftChar;
 
         /**
-         * Whether and when - which - YupputItem is selected by keyboard up/down. If -1: No selection.
-         *
-         * @type {number}
-         */
-        var keyboardSelectedItem = NO_FINDING_HIGHLIGHTED_VALUE;
-
-        /**
-         * The HTML ID of a YupputItem when hovered by mouse pointer.
-         *
-         * @type {string}
-         */
-        var highlightedFindingId = null;
-
-        /**
          * {YupputItem} selectedItem
          */
-        var selectedItem = null;
+        var selectedItem = NO_FINDING_HIGHLIGHTED_VALUE;
 
         /**
          * @type {string}
@@ -459,7 +449,7 @@
          * @param {string} id
          * @return {number}
          */
-        var getKeyboardSelectedItemPositionByHtmlId = function(id) {
+        var getSelectedItemPositionByHtmlId = function(id) {
 
             var i;
             var c = valuesPrivateWRenderingMatching.length;
@@ -487,7 +477,6 @@
          */
         var showMatchingItemsAndHideNotMatchingItems = function() {
 
-            var targetedHtmlId;
             var i;
             var c;
             var totalAmountMatches = valuesPrivateWRenderingMatching.length;
@@ -594,8 +583,6 @@
                     }
                 }
             }
-
-            // TODO: Fix last line
         };
 
         /**
@@ -664,16 +651,16 @@
             Ytils.YupputHtml.setInnerHtml(CONTAINER_ID, containerFindingsInnerHtml);
         };
 
-        var clearAllHighlightings = function() {
+        /**
+         * Removes all highlightings from visible YupputItems.
+         */
+        var unhighlightAllItems = function() {
 
-            // TODO
-            console.log("clearAllHighlightings");
-        };
+            var i;
+            for (i = 0; i < valuesPrivateWRenderingMatching.length; i += 1) {
 
-        var highlightStartValueDisplayed = function() {
-
-            // TODO
-            console.log("highlightStartValueDisplayed " + startValueDisplayed);
+                document.getElementById(valuesPrivateWRenderingMatching[i].id).classList.remove(FINDING_HOVER_AND_SELECTION_CLASS);
+            }
         };
 
         /**
@@ -684,27 +671,12 @@
 
             var totalAmountMatches = valuesPrivateWRenderingMatching.length;
 
-            if (keyboardSelectedItem !== NO_FINDING_HIGHLIGHTED_VALUE) {
+            console.log("keyboardSelectedItem: " + selectedItem);
+            // TODO: Go on with one selected item.
 
-                startValueDisplayed = keyboardSelectedItem += direction;
-
-            } else {
-
-                startValueDisplayed += direction;
-            }
-
-            // Ignore direction: Always chose the first one.
-            if (startValueDisplayed <= NO_FINDING_HIGHLIGHTED_VALUE) {
-
-                startValueDisplayed = 0;
-
-            } else if (startValueDisplayed >= totalAmountMatches) {
-
-                startValueDisplayed = totalAmountMatches - 1;
-            }
-
+            unhighlightAllItems();
+            filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
             displayOrHideDownButton();
-            highlightStartValueDisplayed();
         };
 
         /**
@@ -754,18 +726,23 @@
 
                 } else {
 
+                    // false === e.ctrlKey - because it would'nt be rendered afterwards in this case.
                     if (e.key === "ArrowDown") {
 
                         operateUpAndDownSelection(1);
+                        // filterAllValuesAndRender(); is called in function above.
 
                     } else if (e.key === "ArrowUp") {
 
                         operateUpAndDownSelection(-1);
-                    }
+                        // filterAllValuesAndRender(); is called in function above.
 
-                    if (false === e.ctrlKey) {
+                    } else {
 
-                        filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
+                        if (false === e.ctrlKey) {
+
+                            filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
+                        }
                     }
                 }
             };
@@ -778,155 +755,46 @@
          */
         var initMouseListeners = function(initial) {
 
+            var MOUSE_LEAVE = "mouseleave";
+            var MOUSE_MOVE = "mousemove";
+
             var i;
             var c = valuesPrivateWRendering.length;
-            var previousKeyboardSelectedItem = null;
             var yupputFindingContainerHandle;
 
             if (initial) {
 
-                document.getElementById(CONTAINER_FINDINGS_ID).addEventListener("mouseleave", function() {
+                document.getElementById(CONTAINER_FINDINGS_ID).addEventListener(MOUSE_LEAVE, function() {
 
-                    highlightedFindingId = null;
-                    keyboardSelectedItem = NO_FINDING_HIGHLIGHTED_VALUE;
-                    previousKeyboardSelectedItem = null;
+                    selectedItem = NO_FINDING_HIGHLIGHTED_VALUE;
+
+                    console.log("Hovered item: " + selectedItem);
                 });
             }
 
             for (i = 0; i < c; i += 1) {
 
-                yupputFindingContainerHandle = document.getElementById(valuesPrivateWRendering[i].id)
-                yupputFindingContainerHandle.addEventListener("mousemove", function(e) {
+                yupputFindingContainerHandle = document.getElementById(valuesPrivateWRendering[i].id);
+                yupputFindingContainerHandle.addEventListener(MOUSE_MOVE, function(e) {
 
-                    highlightedFindingId = this.id;
-                    keyboardSelectedItem = getKeyboardSelectedItemPositionByHtmlId(this.id);
+                    selectedItem = getSelectedItemPositionByHtmlId(this.id);
+                    this.classList.add(FINDING_HOVER_AND_SELECTION_CLASS);
 
-                    // We do not want that to happen on every mousemove-tick.
-                    if (null !== previousKeyboardSelectedItem && previousKeyboardSelectedItem !== keyboardSelectedItem) {
+                    console.log(typeof this);
+                    console.log("Hovered item: " + selectedItem);
+                });
 
-                        previousKeyboardSelectedItem = keyboardSelectedItem;
-                        clearAllHighlightings();
-                    }
+                yupputFindingContainerHandle.addEventListener(MOUSE_LEAVE, function(e) {
+
+                    this.classList.remove(FINDING_HOVER_AND_SELECTION_CLASS);
+                    console.log("id " + this.id);
+                    console.log("Hover-leaved item: " + selectedItem);
                 });
             }
         };
 
-        /**
-         * Constructor.
-         *
-         * @param {object[]} values - An array of objects with the following parameters:
-         * @param {string} values.headline - The headline of the entry.
-         * @param {string[]} values.metaData - An array of string to display meta data in the second row below the headline.
-         * @param {string} [values.thumbnail] - Optional: The url to the thumbnail image.
-         * @param {string} values.value - The value to return to the callback if value[x] has been selected.
-         */
-        var construct = function(values) {
-
-            var preload = function() {
-
-                var i;
-                var c = valuesPrivate.length;
-
-                for (i = 0; i < c; i += 1) {
-
-                    if (Ytils.YupputHelper.isString(valuesPrivate[i].thumbnail)) {
-
-                        Ytils.YupputHtml.preloadImage(valuesPrivate[i].thumbnail);
-                    }
-
-                    if (Ytils.YupputHelper.isString(valuesPrivate[i].fullImage)) {
-
-                        Ytils.YupputHtml.preloadImage(valuesPrivate[i].fullImage);
-                    }
-                }
-            };
-
-            var god = Ytils.YupputHelper.god;
-
-            placeholder = god(config,"placeholder") || DEFAULT_PLACEHOLDER;
-            zIndex = god(config,"zIndex") || DEFAULT_Z_INDEX;
-            autoHide = god(config,"autoHide") || DEFAULT_AUTO_HIDE;
-            maxItemCount = god(config,"maxItemCount") || DEFAULT_MAX_ITEM_COUNT;
-            ctrlShiftChar = god(config,"ctrlShiftChar") || DEFAULT_CTRL_SHIFT_CHAR;
-            hideOnEscape = god(config,"hideOnEscape") || DEFAULT_HIDE_ON_ESCAPE;
-            preloadImages = god(config,"preloadImages") || DEFAULT_PRELOAD_IMAGES;
-            matchOnlyHeadline = god(config,"matchOnlyHeadline") || DEFAULT_MATCH_ONLY_HEADLINE;
-            stopPropagateEnter = god(config,"stopPropagateEnter") || DEFAULT_STOP_PROPAGATE_ENTER;
-            stopPropagateEscape = god(config,"stopPropagateEscape") || DEFAULT_STOP_PROPAGATE_ESCAPE;
-            containsForHeadlineMatches = god(config,"containsForHeadlineMatches") || DEFAULT_CONTAINS_FOR_HEADLINE_MATCHES;
-            containsForMetaMatches = god(config,"containsForMetaMatches") || DEFAULT_CONTAINS_FOR_META_MATCHES;
-
-            if (containsForHeadlineMatches) {
-                matchForHeadlineMatchesCallback = Ytils.YupputHelper.isStringContaining;
-            }
-            if (containsForMetaMatches) {
-                matchForMetaMatchesCallback = Ytils.YupputHelper.isStringContaining;
-            }
-
-            // Check callback parameter:
-            Ytils.YupputHelper.expectFunction(callback, "Ytils.Yupput expects parameter callback to be a function.");
-
-            // Check config options:
-            Ytils.YupputHelper.expectString(placeholder, "Ytils.Yupput expects config option .placeholder to be a string.");
-            Ytils.YupputHelper.expectInt(zIndex, "Ytils.Yupput expects config option .zIndex to be an integer.");
-            Ytils.YupputHelper.expectBoolean(autoHide, "Ytils.Yupput expects config option .autoHide to be a boolean.");
-            Ytils.YupputHelper.expectAz09Char(ctrlShiftChar, "Ytils.Yupput expects config option .ctrlShiftChar to be a single char within a-z, A-Z or 0-9.");
-            Ytils.YupputHelper.expectFunctionOrNull(god(config, "callbackBeforeShow"), "Ytils.Yupput expects config option .callbackBeforeShow to be a function.");
-            Ytils.YupputHelper.expectFunctionOrNull(god(config, "callbackOnEscape"), "Ytils.Yupput expects config option .callbackOnEscape to be a function.");
-
-            ctrlShiftChar = ctrlShiftChar.toUpperCase();
-
-            createInitialContainer();
-            valuesPrivate = values;
-            prepareAllValuesAndAppendToBody();
-
-            Ytils.YupputHtml.expectExisting(INPUT_ID);
-            initKeyListeners();
-            initMouseListeners(true);
-
-            if (preloadImages) {
-
-                preload();
-            }
-
-            initialized = true;
-        };
-
-        /**
-         * Returns true if the Yupput dialogue is active or not.
-         *
-         * @returns {boolean}
-         */
-        this.isVisible = function() {
-
-            return uiVisible;
-        };
-
-        /**
-         * Updates the data records
-         *
-         * @param {object[]} values - An array of objects with the following parameters:
-         * @param {string} values.headline - The headline of the entry.
-         * @param {string[]} values.metaData - An array of string to display meta data in the second row below the headline.
-         * @param {string} [values.thumbnail] - Optional: The url to the thumbnail image.
-         * @param {string} values.value - The value to return to the callback if value[x] has been selected.
-         */
-        this.updateData = function(values) {
-
-            valuesPrivate = values;
-            prepareAllValuesAndAppendToBody();
-            initMouseListeners(false);
-        };
-
-        /**
-         * Renders the dialogue.
-         */
-        this.show = function() {
-
-            showPrivate(values);
-        };
-
-        construct(values);
-    } ;
+        /**jsmrg include lib/slice/js/yupput.construct.js */
+        /**jsmrg include lib/slice/js/yupput.public.js */
+    };
 
 }());
