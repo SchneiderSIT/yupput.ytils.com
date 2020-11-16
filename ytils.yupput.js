@@ -25,6 +25,9 @@
      * @param {string} callback.selectedItem The value of the selected item that has been passed in into Yupput before.
      * @param {string} callback.inputValue The value of the input element at the enter-key-event or on selection of an item.
      *
+     * @callback typingCallback
+     * @param {string} callback.inputValue The current value of the input element.
+     *
      * @param {object} config
      * @param {string} [config.placeholder] - The placeholder text for the input on the top, defaults to "Search value".
      * @param {string} [config.zIndex] - The z-index for the absolute positioned Yupput container, defaults to 2000.
@@ -41,8 +44,7 @@
      * @param {boolean} [config.containsForMetaMatches] - Whether to use contains for meta string matching instead of starts-with-check. Defaults to false.
      * @param {string} [config.stopPropagateEnter] - Whether to stop propagation of enter when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {string} [config.stopPropagateEscape] - Whether to stop propagation of escape when hit while the cursor is in Yupput's input field. Defaults to false.
-     * @param {function} [config.callbackBeforeShow] - Optional function callback before the Yupput dialogue opens.
-     * @param {function} [config.callbackOnEscape] - Optional function callback on enter after Yupput's functionality has been done.
+     * @param {typingCallback} [config.callbackOnChange] - Optional function callback that will be fired on input change. The current input value will be passed in.
      * @constructor
      */
     Ytils.Yupput = function(values, callback, config) {
@@ -50,7 +52,6 @@
         var DATA_KEY_HEADLINE = "headline";
         var DATA_KEY_META_DATA = "metaData";
         var DATA_KEY_THUMBNAIL = "thumbnail";
-        var DATA_KEY_VALUE = "value"; // TODO Callback
 
         // Configuration defaults:
         var DEFAULT_PLACEHOLDER = "Search value";
@@ -182,21 +183,15 @@
          */
         var matchCaseInsensitive;
 
-        // Callback functions:
-        /**
-         * @†ype {function}
-         */
-        var callbackOnEscape = null; // TODO
-
-        /**
-         * @†ype {function}
-         */
-        var callbackBeforeShow = null;  // TODO
-
         /**
          * @†ype {boolean}
          */
         var initialized = false;
+
+        /**
+         * @†ype {callbackOnChange|null}
+         */
+        var callbackOnChange;
 
         /**
          * @†ype {boolean}
@@ -807,6 +802,7 @@
                 }
             });
 
+            var inputVal;
             var inputHandle = Ytils.YupputInput.getInputTypeTextHandleById(INPUT_ID);
             inputHandle.onkeyup = function(e) {
 
@@ -848,8 +844,15 @@
 
                         if (false === e.ctrlKey) {
 
+                            inputVal = Ytils.YupputInput.getValueFromInput(INPUT_ID);
+                            // NPE avoided by checks in construct().
+                            if (null !== callbackOnChange) {
+
+                                callbackOnChange(inputVal);
+                            }
+
                             resetSelectedItemAndHighlightings();
-                            filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
+                            filterAllValuesAndRender(inputVal);
                         }
                     }
                 }
