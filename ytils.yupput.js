@@ -22,16 +22,19 @@
      * @param {YupputItem[]} values - An array of objects with the following parameters:
      * @param {inputCallback} callback - The callback function for selections on Yupput. Two parameters will be passed into this callback.
      * @callback inputCallback
-     * @param {string} callback.value The value of the selected item that has been passed in into Yupput before.
+     * @param {string} callback.selectedItem The value of the selected item that has been passed in into Yupput before.
      * @param {string} callback.inputValue The value of the input element at the enter-key-event or on selection of an item.
      *
      * @param {object} config
      * @param {string} [config.placeholder] - The placeholder text for the input on the top, defaults to "Search value".
      * @param {string} [config.zIndex] - The z-index for the absolute positioned Yupput container, defaults to 2000.
      * @param {string} [config.autoHide] - Whether to automatically close Yupput dialogue on entry selection/callback or not. Defaults to true.
-     * @param {string} [config.hideOnEscape] - Whether to close Yupput dialogue on escape or not. Defaults to true.
+     * @param {string} [config.hideOnEscape] - Whether to hide Yupput dialogue on escape or not. Defaults to true.
      * @param {string} [config.maxItemCount] - The maximum number of items being displayed on the Yupput dialogue. Defaults to 5.
      * @param {string} [config.ctrlShiftChar] - The char that opens the Yupput dialogue, when hit together with Control and Shift. Defaults to "Y".
+     * @param {boolean} [config.matchCaseInsensitive] - Whether to match case insensitive or not. Defaults to true.
+     * @param {boolean} [config.callbackOnNoSelectionOnEnter] - Whether to fire @callback inputCallback on enter when nothing's been selected. Will use first displayed item or null. Defaults to false.
+     * @param {boolean} [config.hideOnCallbackFired] - Whether to hide Yupput dialogue on callback fired or not. Defaults to false.
      * @param {boolean} [config.preloadImages] - Whether to preload the images of the items passed into the constructor or not.
      * @param {boolean} [config.matchOnlyHeadline] - Whether to find matches only over the headline value and not within meta data. Defaults to false.
      * @param {boolean} [config.containsForHeadlineMatches] - Whether to use contains for headline matching instead of starts-with-check. Defaults to false.
@@ -62,6 +65,9 @@
         var DEFAULT_MATCH_ONLY_HEADLINE = false;
         var DEFAULT_CONTAINS_FOR_HEADLINE_MATCHES = false;
         var DEFAULT_CONTAINS_FOR_META_MATCHES = false;
+        var DEFAULT_CALLBACK_ON_NO_SELECTION_ON_ENTER = false;
+        var DEFAULT_HIDE_ON_CALLBACK = false;
+        var DEFAULT_MATCH_CASE_INSENSITIVE = true;
 
         // CSS IDs:
         var CONTAINER_ID = "ytilsYupputOuterContainer";
@@ -166,6 +172,16 @@
          */
         var hideOnEscape;
 
+        /**
+         * @†ype {boolean}
+         */
+        var hideOnCallbackFired;
+
+        /**
+         * @†ype {boolean}
+         */
+        var matchCaseInsensitive;
+
         // Callback functions:
         /**
          * @†ype {function}
@@ -218,6 +234,11 @@
         var ctrlShiftChar;
 
         /**
+         * @†ype {boolean}
+         */
+        var callbackOnNoSelectionOnEnter;
+
+        /**
          * {YupputItem} selectedItem
          */
         var selectedItem = NO_SELECTED_ITEM;
@@ -228,11 +249,32 @@
         var bottomLineCssText = null;
 
         /**
+         * @type {function}
+         */
+        var hidePrivate;
+
+        /**
          * This function fires the callback passed into the constructor.
          */
         var fireInputCallback = function() {
 
-            callback(selectedItem, Ytils.YupputInput.getValueFromInput(INPUT_ID));
+            var selectedYupputItem;
+            var inputValue = Ytils.YupputInput.getValueFromInput(INPUT_ID);
+
+            if (NO_SELECTED_ITEM !== selectedItem) {
+
+                if (callbackOnNoSelectionOnEnter) {
+
+                    callback(null, inputValue);
+                    hidePrivate();
+                }
+
+            } else {
+
+                selectedYupputItem = valuesPrivateWRenderingMatching[selectedItem];
+                callback(selectedYupputItem, inputValue);
+                hidePrivate();
+            }
         };
 
         /**
@@ -411,6 +453,14 @@
 
                 var headlineHaystack = god(item, DATA_KEY_HEADLINE);
                 var metaDataHaystack = god(item, DATA_KEY_META_DATA);
+
+                // Apply case-insensitivity - if configured or default.
+                if (matchCaseInsensitive) {
+
+                    headlineHaystack = headlineHaystack.toLowerCase();
+                    metaDataHaystack = metaDataHaystack.toLowerCase();
+                    inputValue = inputValue.toLowerCase();
+                }
 
                 var headlineMatch = matchForHeadlineMatchesCallback(headlineHaystack, inputValue);
                 var metaDataMatch = false;
@@ -631,7 +681,7 @@
         /**
          * Hides the dialogue.
          */
-        var hidePrivate = function() {
+        hidePrivate = function() {
 
             resetSelectedItemAndHighlightings();
             Ytils.YupputInput.clearInput(INPUT_ID);
@@ -813,8 +863,9 @@
          */
         var initMouseListeners = function(initial) {
 
-            var MOUSE_LEAVE = "mouseleave";
+            var CLICK = "click";
             var MOUSE_MOVE = "mousemove";
+            var MOUSE_LEAVE = "mouseleave";
 
             var i;
             var c = valuesPrivateWRendering.length;
@@ -839,6 +890,12 @@
                     this.classList.add(FINDING_HOVER_AND_SELECTION_CLASS);
 
                     console.log("selectedItem: " + selectedItem);
+                });
+
+                yupputFindingContainerHandle.addEventListener(CLICK, function(e) {
+
+                    selectedItem = getSelectedItemPositionByHtmlId(this.id);
+                    fireInputCallback();
                 });
 
                 yupputFindingContainerHandle.addEventListener(MOUSE_LEAVE, function(e) {
