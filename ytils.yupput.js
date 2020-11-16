@@ -80,7 +80,7 @@
         var FINDING_HTML_TEMPLATE = "/**jsmrg htmlvar escdoublequotes lib/slice/htmlvar/yupput.finding.html */";
 
         var EMPTY = "";
-        var NO_FINDING_HIGHLIGHTED_VALUE = -1;
+        var NO_SELECTED_ITEM = -1;
 
         /**
          * The main, outer container handle.
@@ -220,7 +220,7 @@
         /**
          * {YupputItem} selectedItem
          */
-        var selectedItem = NO_FINDING_HIGHLIGHTED_VALUE;
+        var selectedItem = NO_SELECTED_ITEM;
 
         /**
          * @type {string}
@@ -262,12 +262,15 @@
                     yhtml.invisibleElement(upArrowElem);
                 }
 
-                if (!(startValueDisplayed + 1 >= valuesPrivateWRenderingMatching.length)) {
+                console.log("visibleElement " + (startValueDisplayed + maxItemCount) + " - " + valuesPrivateWRenderingMatching.length);
+                if (!(startValueDisplayed + maxItemCount >= valuesPrivateWRenderingMatching.length)) {
 
+                    console.log("yhtml.visibleElement(downArrowElem);");
                     yhtml.visibleElement(downArrowElem);
 
                 } else {
 
+                    console.log("yhtml.invisibleElement(downArrowElem);");
                     yhtml.invisibleElement(downArrowElem);
                 }
             };
@@ -466,7 +469,7 @@
                 }
             }
 
-            return NO_FINDING_HIGHLIGHTED_VALUE;
+            return NO_SELECTED_ITEM;
         };
 
         /**
@@ -603,10 +606,34 @@
         };
 
         /**
+         * Removes all highlightings from visible YupputItems.
+         */
+        var unhighlightAllItems = function() {
+
+            var i;
+            for (i = 0; i < valuesPrivateWRenderingMatching.length; i += 1) {
+
+                document.getElementById(valuesPrivateWRenderingMatching[i].id).classList.remove(FINDING_HOVER_AND_SELECTION_CLASS);
+            }
+        };
+
+        /**
+         * This function sets selection values to initial state (e.g. when closing the dialogue).
+         * We must also not forget to unhighlight a possibly previous selected item.
+         */
+        var resetSelectedItemAndHighlightings = function() {
+
+            startValueDisplayed = 0;
+            selectedItem = NO_SELECTED_ITEM;
+            unhighlightAllItems();
+        };
+
+        /**
          * Hides the dialogue.
          */
         var hidePrivate = function() {
 
+            resetSelectedItemAndHighlightings();
             Ytils.YupputInput.clearInput(INPUT_ID);
             Ytils.YupputHtml.hide(CONTAINER_ID);
 
@@ -652,29 +679,59 @@
         };
 
         /**
-         * Removes all highlightings from visible YupputItems.
-         */
-        var unhighlightAllItems = function() {
-
-            var i;
-            for (i = 0; i < valuesPrivateWRenderingMatching.length; i += 1) {
-
-                document.getElementById(valuesPrivateWRenderingMatching[i].id).classList.remove(FINDING_HOVER_AND_SELECTION_CLASS);
-            }
-        };
-
-        /**
+         * Handles the movement of selectedItem and startValueDisplayed
+         * when the up or down button is pressed.
          *
          * @param {number} direction
          */
         var operateUpAndDownSelection = function(direction) {
 
-            var totalAmountMatches = valuesPrivateWRenderingMatching.length;
+            var selectedYupputItem;
 
-            console.log("keyboardSelectedItem: " + selectedItem);
-            // TODO: Go on with one selected item.
+            // Strategy:
+            // The selectedItem moves the viewport.
+            // The top end of the viewport is startValueDisplayed.
+            // If selectedItem touches gets lower than startValueDisplayed, viewport moves up until 0 is reached.
+            // If selectedItem touches the bottom bound which is defined by (startValueDisplayed + maxItemCount),
+            // the viewport moves down until the bottom is reached.
 
+            // 1. Calculate selectedItem.
+            if (NO_SELECTED_ITEM === selectedItem) {
+
+                selectedItem = startValueDisplayed;
+
+            } else {
+
+                selectedItem += direction;
+                if (selectedItem < 0) {
+
+                    selectedItem = 0;
+
+                } else if (selectedItem >= valuesPrivateWRenderingMatching.length) {
+
+                    selectedItem = valuesPrivateWRenderingMatching.length -1;
+                }
+            }
+
+            console.log("selectedItem: " + selectedItem);
+
+            // 2. Calculate startValueDisplayed from selectedItem.
+            if (selectedItem < startValueDisplayed) {
+
+                startValueDisplayed = selectedItem;
+
+            } else if (selectedItem > (startValueDisplayed + maxItemCount - 1)) {
+
+                startValueDisplayed += 1;
+            }
+
+            console.log("startValueDisplayed: " + startValueDisplayed);
+
+            // Unhighlight all and then highlight the one selected.
             unhighlightAllItems();
+            selectedYupputItem = valuesPrivateWRenderingMatching[selectedItem];
+            document.getElementById(selectedYupputItem.id).classList.add(FINDING_HOVER_AND_SELECTION_CLASS);
+
             filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
             displayOrHideDownButton();
         };
@@ -730,17 +787,18 @@
                     if (e.key === "ArrowDown") {
 
                         operateUpAndDownSelection(1);
-                        // filterAllValuesAndRender(); is called in function above.
+                        // filterAllValuesAndRender(); is called in function operateUpAndDownSelection().
 
                     } else if (e.key === "ArrowUp") {
 
                         operateUpAndDownSelection(-1);
-                        // filterAllValuesAndRender(); is called in function above.
+                        // filterAllValuesAndRender(); is called in function operateUpAndDownSelection().
 
                     } else {
 
                         if (false === e.ctrlKey) {
 
+                            resetSelectedItemAndHighlightings();
                             filterAllValuesAndRender(Ytils.YupputInput.getValueFromInput(INPUT_ID));
                         }
                     }
@@ -766,9 +824,9 @@
 
                 document.getElementById(CONTAINER_FINDINGS_ID).addEventListener(MOUSE_LEAVE, function() {
 
-                    selectedItem = NO_FINDING_HIGHLIGHTED_VALUE;
+                    selectedItem = NO_SELECTED_ITEM;
 
-                    console.log("Hovered item: " + selectedItem);
+                    console.log("selectedItem: " + selectedItem);
                 });
             }
 
@@ -780,15 +838,12 @@
                     selectedItem = getSelectedItemPositionByHtmlId(this.id);
                     this.classList.add(FINDING_HOVER_AND_SELECTION_CLASS);
 
-                    console.log(typeof this);
-                    console.log("Hovered item: " + selectedItem);
+                    console.log("selectedItem: " + selectedItem);
                 });
 
                 yupputFindingContainerHandle.addEventListener(MOUSE_LEAVE, function(e) {
 
                     this.classList.remove(FINDING_HOVER_AND_SELECTION_CLASS);
-                    console.log("id " + this.id);
-                    console.log("Hover-leaved item: " + selectedItem);
                 });
             }
         };
