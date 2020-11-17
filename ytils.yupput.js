@@ -90,13 +90,6 @@
         var NO_SELECTED_ITEM = -1;
 
         /**
-         * The main, outer container handle.
-         *
-         * @type HTMLObjectElement
-         */
-        var mainContainerHandle;
-
-        /**
          * @type YupputItem[]
          */
         var valuesPrivate;
@@ -186,7 +179,7 @@
         /**
          * @†ype {boolean}
          */
-        var initialized = false;
+        // var initialized = false;
 
         /**
          * @†ype {callbackOnChange|null}
@@ -261,14 +254,22 @@
                 if (callbackOnNoSelectionOnEnter) {
 
                     callback(null, inputValue);
-                    hidePrivate();
+
+                    if (hideOnCallbackFired) {
+
+                        hidePrivate();
+                    }
                 }
 
             } else {
 
                 selectedYupputItem = valuesPrivateWRenderingMatching[selectedItem];
                 callback(selectedYupputItem, inputValue);
-                hidePrivate();
+
+                if (hideOnCallbackFired) {
+
+                    hidePrivate();
+                }
             }
         };
 
@@ -378,13 +379,17 @@
             var findingsContainer = Ytils.YupputHtml.clearInnerHtmlAndGetElement(CONTAINER_FINDINGS_ID);
             valuesPrivateWRendering = [ ];
 
+            var newFindingDiv;
+            var thumbail;
+            var headline;
+            var metaData;
+            var itemHtml;
             for (i = 0; i < c; i += 1) {
 
-                var newFindingDiv;
-                var thumbail = god(valuesPrivate[i], DATA_KEY_THUMBNAIL);
-                var headline = god(valuesPrivate[i], DATA_KEY_HEADLINE);
-                var metaData = god(valuesPrivate[i], DATA_KEY_META_DATA);
-                var itemHtml = createFindingHtml(thumbail, headline, metaData);
+                thumbail = god(valuesPrivate[i], DATA_KEY_THUMBNAIL);
+                headline = god(valuesPrivate[i], DATA_KEY_HEADLINE);
+                metaData = god(valuesPrivate[i], DATA_KEY_META_DATA);
+                itemHtml = createFindingHtml(thumbail, headline, metaData);
 
                 valuesPrivateWRendering[i] = { };
                 valuesPrivateWRendering[i].thumbail = thumbail;
@@ -525,8 +530,6 @@
          */
         var showMatchingItemsAndHideNotMatchingItems = function() {
 
-            var i;
-            var c;
             var totalAmountMatches = valuesPrivateWRenderingMatching.length;
 
             /**
@@ -565,7 +568,8 @@
              */
             var showAllMatching = function() {
 
-                c = valuesPrivateWRenderingMatching.length;
+                var i;
+                var c = valuesPrivateWRenderingMatching.length;
                 for (i = 0; i < c; i += 1) {
 
                     showMatchingItem(valuesPrivateWRenderingMatching[i]);
@@ -716,7 +720,7 @@
          */
         var createInitialContainer = function() {
 
-            mainContainerHandle = Ytils.YupputHtml.createAndAppendIfNotExists(CONTAINER_ID);
+            Ytils.YupputHtml.createAndAppendIfNotExists(CONTAINER_ID);
             Ytils.YupputHtml.hide(CONTAINER_ID);
 
             containerFindingsInnerHtml = "/**jsmrg htmlvar escdoublequotes lib/slice/htmlvar/yupput.container-inner-html-w-input.html %d%placeholder */";
@@ -786,7 +790,7 @@
          */
         var initKeyListeners = function() {
 
-            document.addEventListener("keydown", (e) => {
+            document.addEventListener("keydown", function(e) {
 
                 if (e.ctrlKey && e.shiftKey && e.key === ctrlShiftChar) {
 
@@ -874,6 +878,34 @@
             var c = valuesPrivateWRendering.length;
             var yupputFindingContainerHandle;
 
+            var registerMouseMoveBehaviour = function(yupputFindingContainerHandle) {
+
+                yupputFindingContainerHandle.addEventListener(MOUSE_MOVE, function() {
+
+                    selectedItem = getSelectedItemPositionByHtmlId(this.id);
+                    this.classList.add(FINDING_HOVER_AND_SELECTION_CLASS);
+
+                    console.log("selectedItem: " + selectedItem);
+                });
+            };
+
+            var registerMouseClickBehaviour = function(yupputFindingContainerHandle) {
+
+                yupputFindingContainerHandle.addEventListener(CLICK, function() {
+
+                    selectedItem = getSelectedItemPositionByHtmlId(this.id);
+                    fireInputCallback();
+                });
+            };
+
+            var registerMouseLeaveBehaviour = function(yupputFindingContainerHandle) {
+
+                yupputFindingContainerHandle.addEventListener(MOUSE_LEAVE, function() {
+
+                    this.classList.remove(FINDING_HOVER_AND_SELECTION_CLASS);
+                });
+            };
+
             if (initial) {
 
                 document.getElementById(CONTAINER_FINDINGS_ID).addEventListener(MOUSE_LEAVE, function() {
@@ -887,24 +919,9 @@
             for (i = 0; i < c; i += 1) {
 
                 yupputFindingContainerHandle = document.getElementById(valuesPrivateWRendering[i].id);
-                yupputFindingContainerHandle.addEventListener(MOUSE_MOVE, function(e) {
-
-                    selectedItem = getSelectedItemPositionByHtmlId(this.id);
-                    this.classList.add(FINDING_HOVER_AND_SELECTION_CLASS);
-
-                    console.log("selectedItem: " + selectedItem);
-                });
-
-                yupputFindingContainerHandle.addEventListener(CLICK, function(e) {
-
-                    selectedItem = getSelectedItemPositionByHtmlId(this.id);
-                    fireInputCallback();
-                });
-
-                yupputFindingContainerHandle.addEventListener(MOUSE_LEAVE, function(e) {
-
-                    this.classList.remove(FINDING_HOVER_AND_SELECTION_CLASS);
-                });
+                registerMouseMoveBehaviour(yupputFindingContainerHandle);
+                registerMouseClickBehaviour(yupputFindingContainerHandle);
+                registerMouseLeaveBehaviour(yupputFindingContainerHandle);
             }
         };
 
