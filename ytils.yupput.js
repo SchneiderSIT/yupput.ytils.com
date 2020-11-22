@@ -21,7 +21,7 @@
      * @param {YupputItem[]} values - An array of objects with the following parameters:
      * @param {inputCallback} callback - The callback function for selections on Yupput. Two parameters will be passed into this callback.
      * @callback inputCallback
-     * @param {string} callback.selectedItem The value of the selected item that has been passed in into Yupput before.
+     * @param {YupputItem} callback.selectedYupputItem The value of the selected item that has been passed in into Yupput before.
      * @param {string} callback.inputValue The value of the input element at the enter-key-event or on selection of an item.
      *
      * @callback typingCallback
@@ -53,6 +53,7 @@
         var DATA_KEY_HEADLINE = "headline";
         var DATA_KEY_META_DATA = "metaData";
         var DATA_KEY_THUMBNAIL = "thumbnail";
+        var DATA_KEY_META_VALUE = "value";
 
         // Configuration defaults:
         var DEFAULT_PLACEHOLDER = "Search value";
@@ -244,17 +245,20 @@
 
         /**
          * This function fires the callback passed into the constructor.
+         *
+         * @paran {booelan} isClicked
          */
-        var fireInputCallback = function() {
+        var fireInputCallback = function(isClicked) {
 
             var selectedYupputItem;
             var inputValue = Ytils.YupputInput.getValueFromInput(INPUT_ID);
 
             if (NO_SELECTED_ITEM !== selectedItem) {
 
-                if (callbackOnNoSelectionOnEnter) {
+                if (isClicked || callbackOnNoSelectionOnEnter) {
 
-                    callback(null, inputValue);
+                    selectedYupputItem = valuesPrivateWRenderingMatching[selectedItem];
+                    callback(selectedYupputItem, inputValue);
 
                     if (hideOnCallbackFired) {
 
@@ -264,12 +268,14 @@
 
             } else {
 
-                selectedYupputItem = valuesPrivateWRenderingMatching[selectedItem];
-                callback(selectedYupputItem, inputValue);
+                if (callbackOnNoSelectionOnEnter) {
 
-                if (hideOnCallbackFired) {
+                    callback(null, inputValue);
 
-                    hidePrivate();
+                    if (hideOnCallbackFired) {
+
+                        hidePrivate();
+                    }
                 }
             }
         };
@@ -382,17 +388,20 @@
             var headline;
             var metaData;
             var itemHtml;
+            var value;
             for (i = 0; i < c; i += 1) {
 
                 thumbail = god(valuesPrivate[i], DATA_KEY_THUMBNAIL);
                 headline = god(valuesPrivate[i], DATA_KEY_HEADLINE);
                 metaData = god(valuesPrivate[i], DATA_KEY_META_DATA);
+                value = god(valuesPrivate[i], DATA_KEY_META_VALUE);
                 itemHtml = createFindingHtml(thumbail, headline, metaData);
 
                 valuesPrivateWRendering[i] = { };
                 valuesPrivateWRendering[i].thumbail = thumbail;
                 valuesPrivateWRendering[i].headline = headline;
                 valuesPrivateWRendering[i].metaData = metaData;
+                valuesPrivateWRendering[i].value = value;
                 valuesPrivateWRendering[i].html = itemHtml;
                 valuesPrivateWRendering[i].id = Ytils.YupputHelper.createUniqueFindingId(idI);
                 idI += 1;
@@ -817,7 +826,7 @@
 
                     if (uiVisible) {
 
-                        fireInputCallback();
+                        fireInputCallback(false);
                     }
 
                     if (stopPropagateEnter) {
@@ -886,7 +895,7 @@
                 yupputFindingContainerHandle.addEventListener(CLICK, function() {
 
                     selectedItem = getSelectedItemPositionByHtmlId(this.id);
-                    fireInputCallback();
+                    fireInputCallback(true);
                 });
             };
 

@@ -35,10 +35,15 @@ div#ytilsYupputInputContainer {
     margin: auto;
     max-width: 660px;
     -moz-box-shadow: rgba(0, 0,0, 0.3) 0 5px 15px;
-    padding: 10px 65px 10px 10px;
+    padding: 10px 10px 10px 10px;
     text-align: center;
     -webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 5px 15px;
     width: 80%;
+}
+
+div#ytilsYupputInputContainerInputContainer {
+
+    padding-right: 55px;
 }
 
 input#ytilsYupputInput {

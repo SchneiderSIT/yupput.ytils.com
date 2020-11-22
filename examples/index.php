@@ -11,10 +11,18 @@
 <script src="https://opendata.ytils.com/example/yupput/default.js"></script>
 <script>
 
-    var sampleData = Ytils.YupputOpenData.YtilsYupputDataDefault;
     var ready = function () {
 
-        var yupput = new Ytils.Yupput(sampleData, function(value, inputValue) { alert(inputValue); }, {
+        var yupput;
+        var sampleData = Ytils.YupputOpenData.YtilsYupputDataDefault;
+        var yupputSelectionCallback = function(selectedYupputItem, inputValue) {
+
+            console.log("yupputSelectionCallback: " + selectedYupputItem.value + " current input value: " + inputValue);
+            yupput.hide();
+        };
+
+        yupput = new Ytils.Yupput(sampleData, yupputSelectionCallback, {
+
             placeholder: "Suchbegriff",
             maxItemCount: 5,
             preloadImages: true,
