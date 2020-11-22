@@ -57,10 +57,6 @@ input#ytilsYupputInput {
     width: 100%;
 }
 
-input#ytilsYupputInput {
-
-}
-
 div#ytilsYupputOuterContainer ::-webkit-input-placeholder {
 
     opacity: 0.5;
