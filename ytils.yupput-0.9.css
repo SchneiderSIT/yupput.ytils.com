@@ -85,6 +85,7 @@ div#ytilsYupputFindings {
 div.ytilsYupputFinding {
 
     border-bottom: #b6b6b6 solid 1px;
+    cursor: pointer;
     padding: 10px 5px 10px 5px;
     text-align: left;
 }
