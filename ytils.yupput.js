@@ -12,7 +12,6 @@
      * @property {string} values.headline - The headline of the entry.
      * @property {string[]} values.metaData - An array of string to display meta data in the second row below the headline.
      * @property {string} [values.thumbnail] - Optional: The url to the thumbnail image.
-     * @property {string} [values.fullImage] - Optional: The url to to the full image. This will be ignored if no .thumbnail is given.
      * @property {string} values.value - The value to return to the callback if value[x] has been selected.
      */
 
@@ -42,6 +41,7 @@
      * @param {boolean} [config.matchOnlyHeadline] - Whether to find matches only over the headline value and not within meta data. Defaults to false.
      * @param {boolean} [config.containsForHeadlineMatches] - Whether to use contains for headline matching instead of starts-with-check. Defaults to false.
      * @param {boolean} [config.containsForMetaMatches] - Whether to use contains for meta string matching instead of starts-with-check. Defaults to false.
+     * @param {boolean} [config.metaDataOnlyForSearch] - Whether to use the given metaData only for the filtering process. Headline becomes bigger in this case. Defaults to false.
      * @param {string} [config.stopPropagateEnter] - Whether to stop propagation of enter when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {string} [config.stopPropagateEscape] - Whether to stop propagation of escape when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {typingCallback} [config.callbackOnChange] - Optional function callback that will be fired on input change. The current input value will be passed in.
@@ -300,15 +300,12 @@
                     yhtml.invisibleElement(upArrowElem);
                 }
 
-                console.log("visibleElement " + (startValueDisplayed + maxItemCount) + " - " + valuesPrivateWRenderingMatching.length);
                 if (!(startValueDisplayed + maxItemCount >= valuesPrivateWRenderingMatching.length)) {
 
-                    console.log("yhtml.visibleElement(downArrowElem);");
                     yhtml.visibleElement(downArrowElem);
 
                 } else {
 
-                    console.log("yhtml.invisibleElement(downArrowElem);");
                     yhtml.invisibleElement(downArrowElem);
                 }
             };
@@ -762,8 +759,6 @@
                 }
             }
 
-            console.log("selectedItem: " + selectedItem);
-
             // 2. Calculate startValueDisplayed from selectedItem.
             if (selectedItem < startValueDisplayed) {
 
@@ -773,8 +768,6 @@
 
                 startValueDisplayed += 1;
             }
-
-            console.log("startValueDisplayed: " + startValueDisplayed);
 
             // Unhighlight all and then highlight the one selected.
             unhighlightAllItems();
@@ -884,8 +877,6 @@
 
                     selectedItem = getSelectedItemPositionByHtmlId(this.id);
                     this.classList.add(FINDING_HOVER_AND_SELECTION_CLASS);
-
-                    console.log("selectedItem: " + selectedItem);
                 });
             };
 
@@ -911,8 +902,6 @@
                 document.getElementById(CONTAINER_FINDINGS_ID).addEventListener(MOUSE_LEAVE, function() {
 
                     selectedItem = NO_SELECTED_ITEM;
-
-                    console.log("selectedItem: " + selectedItem);
                 });
             }
 
