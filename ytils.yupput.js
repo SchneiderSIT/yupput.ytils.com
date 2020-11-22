@@ -45,6 +45,7 @@
      * @param {string} [config.stopPropagateEnter] - Whether to stop propagation of enter when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {string} [config.stopPropagateEscape] - Whether to stop propagation of escape when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {typingCallback} [config.callbackOnChange] - Optional function callback that will be fired on input change. The current input value will be passed in.
+     * @throws Will throw an exception if current browser is an Internet Explorer with a version lower than 10.
      * @constructor
      */
     Ytils.Yupput = function(values, callback, config) {
