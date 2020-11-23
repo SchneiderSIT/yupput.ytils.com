@@ -21,16 +21,11 @@
             yupput.hide();
         };
 
-        yupput = new Ytils.Yupput(sampleData, yupputSelectionCallback, {
-
-            placeholder: "Suchbegriff",
-            maxItemCount: 5,
-            preloadImages: true,
-            containsForMetaMatches: true
-        });
+        yupput = new Ytils.Yupput(sampleData, yupputSelectionCallback, { });
     };
 
-    document.addEventListener("DOMContentLoaded", function(event) {
+    document.addEventListener("DOMContentLoaded", function() {
+
         ready();
     });
 
