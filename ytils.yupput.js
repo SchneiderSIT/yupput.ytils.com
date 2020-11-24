@@ -24,13 +24,12 @@
      * @param {YupputItem} callback.selectedYupputItem The value of the selected item that has been passed in into Yupput before.
      * @param {string} callback.inputValue The value of the input element at the enter-key-event or on selection of an item.
      *
-     * @callback typingCallback
+     * @callback onChangeCallback
      * @param {string} callback.inputValue The current value of the input element.
      *
      * @param {object} config
      * @param {string} [config.placeholder] - The placeholder text for the input on the top, defaults to "Search value".
      * @param {string} [config.zIndex] - The z-index for the absolute positioned Yupput container, defaults to 2000.
-     * @param {string} [config.autoHide] - Whether to automatically close Yupput dialogue on entry selection/callback or not. Defaults to true.
      * @param {string} [config.hideOnEscape] - Whether to hide Yupput dialogue on escape or not. Defaults to true.
      * @param {string} [config.maxItemCount] - The maximum number of items being displayed on the Yupput dialogue. Defaults to 5.
      * @param {string} [config.ctrlShiftChar] - The char that opens the Yupput dialogue, when hit together with Control and Shift. Defaults to "Y".
@@ -41,11 +40,10 @@
      * @param {boolean} [config.matchOnlyHeadline] - Whether to find matches only over the headline value and not within meta data. Defaults to false.
      * @param {boolean} [config.containsForHeadlineMatches] - Whether to use contains for headline matching instead of starts-with-check. Defaults to false.
      * @param {boolean} [config.containsForMetaMatches] - Whether to use contains for meta string matching instead of starts-with-check. Defaults to false.
-     * @param {boolean} [config.metaDataOnlyForSearch] - Whether to use the given metaData only for the filtering process. Headline becomes bigger in this case. Defaults to false.
      * @param {string} [config.stopPropagateEnter] - Whether to stop propagation of enter when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {string} [config.stopPropagateEscape] - Whether to stop propagation of escape when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {string} [config.stopPropagateDblClick] - Whether to stop propagation of double clicking the input field to close Yupput input without selection. Defaults to false.
-     * @param {typingCallback} [config.callbackOnChange] - Optional function callback that will be fired on input change. The current input value will be passed in.
+     * @param {onChangeCallback} [config.callbackOnChange] - Optional function callback that will be fired on input change. The current input value will be passed in.
      * @throws Will throw an exception if current browser is an Internet Explorer with a version lower than 10.
      * @constructor
      */
@@ -133,11 +131,6 @@
          * @type {number}
          */
         var zIndex;
-
-        /**
-         * @type {boolean}
-         */
-        var autoHide;
 
         /**
          * @type {number}
