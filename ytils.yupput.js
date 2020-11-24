@@ -57,7 +57,6 @@
         // Configuration defaults:
         var DEFAULT_PLACEHOLDER = "Search value";
         var DEFAULT_Z_INDEX = 2000;
-        var DEFAULT_AUTO_HIDE = true;
         var DEFAULT_MAX_ITEM_COUNT = 4;
         var DEFAULT_CTRL_SHIFT_CHAR = "Y";
         var DEFAULT_STOP_PROPAGATE_ENTER = false;
