@@ -1,35 +1,16 @@
-body {
-
-    background-color: rgb(247, 247, 247);
-    color: rgb(82, 82, 82);
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
-h1 {
-
-    font-size: 24px;
-}
-
-h2 {
-
-    font-size: 18px;
-}
-
-h3 {
-
-    font-size: 14px;
-}
-
 div#ytilsYupputOuterContainer {
 
+    color: rgb(82, 82, 82);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     position: absolute;
-    width: 100%;
     top: 22%;
+    width: 100%;
     z-index: 2000;
 }
 
 div#ytilsYupputInputContainer {
 
+    background-color: rgb(247, 247, 247);
     border-radius: 10px;
     box-shadow: rgba(0, 0, 0, 0.3) 0 5px 15px;
     margin: auto;
@@ -134,13 +115,17 @@ div.ytilsYupputFinding span.ytilsYupputFindingRightTextInner {
 div#ytilsYupputFindings div.ytilsYupputFindingMainLine {
 
     font-size: 20px;
+    overflow: hidden;
     padding-left: 5px;
+    white-space: nowrap;
 }
 
 div#ytilsYupputFindings div.ytilsYupputFindingSubLine {
 
     font-size: 11px;
+    overflow: hidden;
     padding-left: 5px;
+    white-space: nowrap;
 }
 
 div#ytilsYupputFindingsUpIndicator,

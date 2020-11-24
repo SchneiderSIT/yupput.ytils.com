@@ -1,0 +1,81 @@
+body {
+
+    background-color: rgb(247, 247, 247);
+    color: rgb(82, 82, 82);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+#messageHide {
+
+    display: none;
+}
+
+#ytilsYupputPresentation,
+#ytilsYupputPresentationFooter {
+
+    text-align: center;
+}
+
+#ytilsYupputPresentationSpacing {
+
+    margin: auto;
+    max-width: 80%;
+    width: 750px;
+}
+
+#ytilsYupputPresentationSpacing p a {
+
+    color: rgb(82, 82, 82);
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+#ytilsYupputPresentationSpacingFooter {
+
+    text-align: center;
+}
+
+div.fullLineSpacerOuter {
+
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+div.fullLineSpacerOuter div.fullLineSpacerInner {
+
+    border-top: rgb(82, 82, 82) solid 1px;
+    height: 1px;
+}
+
+input#yupputFeedback {
+
+    background: none;
+    border: rgb(82, 82, 82) solid 1px;
+    border-radius: 10px;
+    font-size: 16px;
+    margin-top: 10px;
+    padding: 5px;
+    text-align: center;
+    width: 80%;
+}
+
+input#yupputFeedback:focus {
+
+    outline: none;
+}
+
+#ytilsYupputActionFooterStick {
+
+    height: 80px;
+    margin-top: -80px;
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    z-index: 100;
+}
+
+#ytilsYupputPresentation h1 {
+
+    font-size: 24px;
+    font-weight: normal;
+}

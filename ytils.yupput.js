@@ -44,6 +44,7 @@
      * @param {boolean} [config.metaDataOnlyForSearch] - Whether to use the given metaData only for the filtering process. Headline becomes bigger in this case. Defaults to false.
      * @param {string} [config.stopPropagateEnter] - Whether to stop propagation of enter when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {string} [config.stopPropagateEscape] - Whether to stop propagation of escape when hit while the cursor is in Yupput's input field. Defaults to false.
+     * @param {string} [config.stopPropagateDblClick] - Whether to stop propagation of double clicking the input field to close Yupput input without selection. Defaults to false.
      * @param {typingCallback} [config.callbackOnChange] - Optional function callback that will be fired on input change. The current input value will be passed in.
      * @throws Will throw an exception if current browser is an Internet Explorer with a version lower than 10.
      * @constructor
@@ -59,10 +60,11 @@
         var DEFAULT_PLACEHOLDER = "Search value";
         var DEFAULT_Z_INDEX = 2000;
         var DEFAULT_AUTO_HIDE = true;
-        var DEFAULT_MAX_ITEM_COUNT = 5;
+        var DEFAULT_MAX_ITEM_COUNT = 4;
         var DEFAULT_CTRL_SHIFT_CHAR = "Y";
         var DEFAULT_STOP_PROPAGATE_ENTER = false;
         var DEFAULT_STOP_PROPAGATE_ESCAPE = false;
+        var DEFAULT_STOP_PROPAGATE_DBLCLICK = false;
         var DEFAULT_HIDE_ON_ESCAPE = true;
         var DEFAULT_PRELOAD_IMAGES = false;
         var DEFAULT_MATCH_ONLY_HEADLINE = false;
@@ -162,6 +164,11 @@
          * @†ype {boolean}
          */
         var stopPropagateEscape;
+
+        /**
+         * @†ype {boolean}
+         */
+        var stopPropagateDblClick;
 
         /**
          * @†ype {boolean}
@@ -811,6 +818,16 @@
 
             var inputVal;
             var inputHandle = Ytils.YupputInput.getInputTypeTextHandleById(INPUT_ID);
+            inputHandle.ondblclick = function(e) {
+
+                hidePrivate();
+
+                if (stopPropagateDblClick) {
+
+                    e.stopPropagation();
+                }
+            };
+
             inputHandle.onkeyup = function(e) {
 
                 if (hideOnEscape && e.key === "Escape") {
