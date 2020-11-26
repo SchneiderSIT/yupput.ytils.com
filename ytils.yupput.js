@@ -26,6 +26,9 @@
      *
      * @callback onChangeCallback
      * @param {string} callback.inputValue The current value of the input element.
+     * @callback thumbnailClickCallback
+     * @param {string} callback.value The current value of the input element.
+     * @param {string} callback.thumbnail The current thumbnail image.
      *
      * @param {object} config
      * @param {string} [config.placeholder] - The placeholder text for the input on the top, defaults to "Search value".
@@ -44,6 +47,7 @@
      * @param {string} [config.stopPropagateEscape] - Whether to stop propagation of escape when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {string} [config.stopPropagateDblClick] - Whether to stop propagation of double clicking the input field to close Yupput input without selection. Defaults to false.
      * @param {onChangeCallback} [config.callbackOnChange] - Optional function callback that will be fired on input change. The current input value will be passed in.
+     * @param {thumbnailClickCallback} [config.thumbnailClickCallback] - Optional callback for clicks on the thumbnail. If callback is configured, this won't trigger the main click on a Yupput item.
      * @throws Will throw an exception if current browser is an Internet Explorer with a version lower than 10.
      * @constructor
      */
@@ -83,6 +87,7 @@
         // CSS classes:
         var FINDING_CONTAINER_CLASS = "ytilsYupputFinding";
         var FINDING_HOVER_AND_SELECTION_CLASS = "ytilsYupputFindingHighlighted";
+        var FINDING_THUMBNAIL_CONTAINER = "ytilsYupputFindingLeft";
 
         // HTML templates:
         var FINDING_HTML_TEMPLATE = "/**jsmrg htmlvar escdoublequotes lib/slice/htmlvar/yupput.finding.html */";
@@ -186,6 +191,11 @@
          * @†ype {callbackOnChange|null}
          */
         var callbackOnChange;
+
+        /**
+         * @type {thumbnailClickCallback|null}
+         */
+        var thumbnailClickCallback;
 
         /**
          * @†ype {boolean}
@@ -383,21 +393,21 @@
             valuesPrivateWRendering = [ ];
 
             var newFindingDiv;
-            var thumbail;
+            var thumbnail;
             var headline;
             var metaData;
             var itemHtml;
             var value;
             for (i = 0; i < c; i += 1) {
 
-                thumbail = god(valuesPrivate[i], DATA_KEY_THUMBNAIL);
+                thumbnail = god(valuesPrivate[i], DATA_KEY_THUMBNAIL);
                 headline = god(valuesPrivate[i], DATA_KEY_HEADLINE);
                 metaData = god(valuesPrivate[i], DATA_KEY_META_DATA);
                 value = god(valuesPrivate[i], DATA_KEY_META_VALUE);
-                itemHtml = createFindingHtml(thumbail, headline, metaData);
+                itemHtml = createFindingHtml(thumbnail, headline, metaData);
 
                 valuesPrivateWRendering[i] = { };
-                valuesPrivateWRendering[i].thumbail = thumbail;
+                valuesPrivateWRendering[i].thumbnail = thumbnail;
                 valuesPrivateWRendering[i].headline = headline;
                 valuesPrivateWRendering[i].metaData = metaData;
                 valuesPrivateWRendering[i].value = value;
@@ -901,10 +911,21 @@
 
             var registerMouseClickBehaviour = function(yupputFindingContainerHandle) {
 
-                yupputFindingContainerHandle.addEventListener(CLICK, function() {
+                yupputFindingContainerHandle.addEventListener(CLICK, function(e) {
 
+                    var clickedYupputItem;
                     selectedItem = getSelectedItemPositionByHtmlId(this.id);
-                    fireInputCallback(true);
+                    clickedYupputItem = valuesPrivateWRenderingMatching[selectedItem];
+
+
+                    if (thumbnailClickCallback !== null && e.target.className === FINDING_THUMBNAIL_CONTAINER) {
+
+                        thumbnailClickCallback(clickedYupputItem.value, clickedYupputItem.thumbnail);
+
+                    } else {
+
+                        fireInputCallback(true);
+                    }
                 });
             };
 

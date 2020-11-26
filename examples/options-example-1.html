@@ -44,6 +44,10 @@
                     <td>.preloadImages</td>
                     <td>Changed to <em>true</em></td>
                 </tr>
+                <tr>
+                    <td>.thumbnailClickCallback</td>
+                    <td>Added function callback</td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -74,7 +78,11 @@
             placeholder: "Find something",
             hideOnEscape: false,
             maxItemCount: 3,
-            preloadImages: true
+            preloadImages: true,
+            thumbnailClickCallback: function(itemVal, itemThumbnail) {
+
+                document.getElementById("yupputFeedback").value = "Thumbnail: " + itemThumbnail;
+            }
         });
 
         document.getElementById("yupputTouchOpener").onclick = function() {
