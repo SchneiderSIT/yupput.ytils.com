@@ -264,23 +264,20 @@
          *
          * @paran {booelan} isClicked
          */
-        var fireInputCallback = function(isClicked) {
+        var fireInputCallback = function() {
 
             var selectedYupputItem;
             var inputValue = Ytils.YupputInput.getValueFromInput(INPUT_ID);
 
             if (NO_SELECTED_ITEM !== selectedItem) {
 
-                // TODO if (isClicked || callbackOnNoSelectionOnEnter) {
+                selectedYupputItem = valuesPrivateWRenderingMatching[selectedItem];
+                callback(selectedYupputItem, inputValue);
 
-                    selectedYupputItem = valuesPrivateWRenderingMatching[selectedItem];
-                    callback(selectedYupputItem, inputValue);
+                if (hideOnCallbackFired) {
 
-                    if (hideOnCallbackFired) {
-
-                        hidePrivate();
-                    }
-                // TODO }
+                    hidePrivate();
+                }
 
             } else {
 
@@ -860,7 +857,7 @@
 
                     if (uiVisible) {
 
-                        fireInputCallback(false);
+                        fireInputCallback();
                     }
 
                     if (stopPropagateEnter) {
@@ -941,7 +938,7 @@
 
                     } else {
 
-                        fireInputCallback(true);
+                        fireInputCallback();
                     }
                 });
             };
