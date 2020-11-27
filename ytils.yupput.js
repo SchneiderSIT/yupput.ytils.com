@@ -43,6 +43,7 @@
      * @param {boolean} [config.matchOnlyHeadline] - Whether to find matches only over the headline value and not within meta data. Defaults to false.
      * @param {boolean} [config.containsForHeadlineMatches] - Whether to use contains for headline matching instead of starts-with-check. Defaults to false.
      * @param {boolean} [config.containsForMetaMatches] - Whether to use contains for meta string matching instead of starts-with-check. Defaults to false.
+     * @param {boolean} [config.moveCursorBackToEndOnUpArrow] - Whether to force the cursor stay at the end of the input element when pressing up. Defaults to true.
      * @param {string} [config.stopPropagateEnter] - Whether to stop propagation of enter when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {string} [config.stopPropagateEscape] - Whether to stop propagation of escape when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {string} [config.stopPropagateDblClick] - Whether to stop propagation of double clicking the input field to close Yupput input without selection. Defaults to false.
@@ -74,6 +75,7 @@
         var DEFAULT_CALLBACK_ON_NO_SELECTION_ON_ENTER = false;
         var DEFAULT_HIDE_ON_CALLBACK = false;
         var DEFAULT_MATCH_CASE_INSENSITIVE = true;
+        var DEFAULT_MOVE_CURSOR_BACK_TO_END_ON_UP_ARROW = true;
 
         // CSS IDs:
         var CONTAINER_ID = "ytilsYupputOuterContainer";
@@ -150,6 +152,11 @@
          * @type {boolean}
          */
         var matchOnlyHeadline;
+
+        /**
+         * @type {boolean}
+         */
+        var moveCursorBackToEndOnUpArrow;
 
         // Event configuration settings:
         /**
@@ -264,7 +271,7 @@
 
             if (NO_SELECTED_ITEM !== selectedItem) {
 
-                if (isClicked || callbackOnNoSelectionOnEnter) {
+                // TODO if (isClicked || callbackOnNoSelectionOnEnter) {
 
                     selectedYupputItem = valuesPrivateWRenderingMatching[selectedItem];
                     callback(selectedYupputItem, inputValue);
@@ -273,7 +280,7 @@
 
                         hidePrivate();
                     }
-                }
+                // TODO }
 
             } else {
 
@@ -832,6 +839,14 @@
 
             inputHandle.onkeyup = function(e) {
 
+                var optionalCursorMoveToEndOfInput = function() {
+
+                    if (moveCursorBackToEndOnUpArrow) {
+
+                        Ytils.YupputHtml.moveCursorToEndOfInput(INPUT_ID);
+                    }
+                };
+
                 if (hideOnEscape && e.key === "Escape") {
 
                     hidePrivate();
@@ -859,11 +874,13 @@
                     if (e.key === "ArrowDown") {
 
                         operateUpAndDownSelection(1);
+                        optionalCursorMoveToEndOfInput();
                         // filterAllValuesAndRender(); is called in function operateUpAndDownSelection().
 
                     } else if (e.key === "ArrowUp") {
 
                         operateUpAndDownSelection(-1);
+                        optionalCursorMoveToEndOfInput();
                         // filterAllValuesAndRender(); is called in function operateUpAndDownSelection().
 
                     } else {
