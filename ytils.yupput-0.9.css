@@ -29,9 +29,9 @@ div#ytilsYupputInputContainerInputContainer {
 
 label#ytilsYupputInputLabel {
 
-    display: inline !important;
+    display: block !important;
     font-weight: normal !important;
-    margin: auto !important;
+    margin-bottom: 0 !important;
     max-width: 100% !important;
 }
 
