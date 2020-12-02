@@ -27,6 +27,14 @@ div#ytilsYupputInputContainerInputContainer {
     padding-right: 55px;
 }
 
+label#ytilsYupputInputLabel {
+
+    display: inline !important;
+    font-weight: normal !important;
+    margin: auto !important;
+    max-width: 100% !important;
+}
+
 input#ytilsYupputInput {
 
     background-color: rgb(247, 247, 247);
