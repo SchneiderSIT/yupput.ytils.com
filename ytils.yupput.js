@@ -680,9 +680,18 @@
         var unhighlightAllItems = function() {
 
             var i;
-            for (i = 0; i < valuesPrivateWRenderingMatching.length; i += 1) {
+            var elemHandle;
 
-                document.getElementById(valuesPrivateWRenderingMatching[i].id).classList.remove(FINDING_HOVER_AND_SELECTION_CLASS);
+            if (valuesPrivateWRenderingMatching && valuesPrivateWRenderingMatching.length) {
+
+                for (i = 0; i < valuesPrivateWRenderingMatching.length; i += 1) {
+
+                    elemHandle = document.getElementById(valuesPrivateWRenderingMatching[i].id);
+                    if (elemHandle && elemHandle.classList) {
+
+                        elemHandle.classList.remove(FINDING_HOVER_AND_SELECTION_CLASS);
+                    }
+                }
             }
         };
 
