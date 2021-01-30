@@ -32,8 +32,8 @@
      *
      * @param {object} config
      * @param {string} [config.placeholder] - The placeholder text for the input on the top, defaults to "Search value".
-     * @param {string} [config.zIndex] - The z-index for the absolute positioned Yupput container, defaults to 2000.
-     * @param {string} [config.maxItemCount] - The maximum number of items being displayed on the Yupput dialogue. Defaults to 4.
+     * @param {number} [config.zIndex] - The z-index for the absolute positioned Yupput container, defaults to 2000.
+     * @param {number} [config.maxItemCount] - The maximum number of items being displayed on the Yupput dialogue. Defaults to 4.
      * @param {string} [config.ctrlShiftChar] - The char that opens the Yupput dialogue, when hit together with Control and Shift. If set to null, no keyboard combination will open Yupput directly. Defaults to "Y".
      * @param {boolean} [config.hideOnEscape] - Whether to hide Yupput dialogue on escape or not. Defaults to true.
      * @param {boolean} [config.matchCaseInsensitive] - Whether to match case insensitive or not. Defaults to true.
