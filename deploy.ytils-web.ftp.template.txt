@@ -1,0 +1,4 @@
+open <server-address>
+user <username> <password>
+put <local path to>/com.ytils.yupput-<version>.zip <server path to>/com.ytils.yupput-<version>.zip
+bye
