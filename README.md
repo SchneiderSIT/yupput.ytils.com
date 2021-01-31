@@ -9,7 +9,7 @@ Yupput is made of vanilla JavaScript and CSS.
 
 ## Building Yupput
 
-Yupput uses Ytils' JsMrg (https://jsmrg.ytils.com) tool to combine the main development file ytils.yupput.js with the 
+Yupput uses Ytils' JsMrg (https://www.ytils.com/jsmrg) tool to combine the main development file ytils.yupput.js with the 
 partial files from the lib folder. JsMrg ist bundled within this repository.
 
 To run JsMrg you will need to have .NET Core 3.1 (https://docs.microsoft.com/en-us/dotnet/core/install/) or higher 
