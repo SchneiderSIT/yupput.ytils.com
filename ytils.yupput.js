@@ -24,9 +24,9 @@
      * @param {YupputItem} callback.selectedYupputItem The value of the selected item that has been passed in into Yupput before.
      * @param {string} callback.inputValue The value of the input element at the enter-key-event or on selection of an item.
      *
-     * @callback onChangeCallback
+     * @callback callbackOnChange
      * @param {string} callback.inputValue The current value of the input element.
-     * @callback thumbnailClickCallback
+     * @callback callbackThumbnailClick
      * @param {string} callback.value The current value of the input element.
      * @param {string} callback.thumbnail The current thumbnail image.
      *
@@ -47,8 +47,8 @@
      * @param {boolean} [config.stopPropagateEnter] - Whether to stop propagation of enter when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {boolean} [config.stopPropagateEscape] - Whether to stop propagation of escape when hit while the cursor is in Yupput's input field. Defaults to false.
      * @param {boolean} [config.stopPropagateDblClick] - Whether to stop propagation of double clicking the input field to close Yupput input without selection. Defaults to false.
-     * @param {onChangeCallback} [config.callbackOnChange] - Optional function callback that will be fired on input change. The current input value will be passed in.
-     * @param {thumbnailClickCallback} [config.thumbnailClickCallback] - Optional callback for clicks on the thumbnail. If callback is configured, this won't trigger the main click on a Yupput item.
+     * @param {callbackOnChange} [config.callbackOnChange] - Optional function callback that will be fired on input change. The current input value will be passed in.
+     * @param {callbackThumbnailClick} [config.callbackThumbnailClick] - Optional callback for clicks on the thumbnail. If callback is configured, this won't trigger the main click on a Yupput item.
      * @throws Will throw an exception if current browser is an Internet Explorer with a version lower than 10.
      * @constructor
      */
@@ -200,9 +200,9 @@
         var callbackOnChange;
 
         /**
-         * @type {thumbnailClickCallback|null}
+         * @type {callbackThumbnailClick|null}
          */
-        var thumbnailClickCallback;
+        var callbackThumbnailClick;
 
         /**
          * @†ype {boolean}
@@ -944,9 +944,9 @@
                     clickedYupputItem = valuesPrivateWRenderingMatching[selectedItem];
 
 
-                    if (thumbnailClickCallback !== null && e.target.className === FINDING_THUMBNAIL_CONTAINER) {
+                    if (callbackThumbnailClick !== null && e.target.className === FINDING_THUMBNAIL_CONTAINER) {
 
-                        thumbnailClickCallback(clickedYupputItem.value, clickedYupputItem.thumbnail);
+                        callbackThumbnailClick(clickedYupputItem.value, clickedYupputItem.thumbnail);
 
                     } else {
 
