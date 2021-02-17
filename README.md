@@ -10,6 +10,7 @@ Yupput is made of vanilla JavaScript and CSS.
 ## Full documentation on ytils.com
 
 Visit [ytils.com/yupput](https://www.ytils.com/yupput) for the Yupput documentation.
+
 Visit [ytils.com/jsmrg](https://www.ytils.com/jsmrg) for the JsMrg documentation.
 
 ## Building Yupput
