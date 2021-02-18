@@ -5,7 +5,6 @@
 Ytils Yupput is a JavaScript GUI component for your web-based applications or websites to open an input dialogue 
 comparable to Apple's spotlight input.
 
-
 ![Ytils Yupput](https://www.ytils.com/static/img/yupput-first-impression.png "Ytils Yupput")
 
 Yupput is made of vanilla JavaScript and CSS.
