@@ -39,6 +39,7 @@
      * @param {boolean} [config.matchCaseInsensitive] - Whether to match case insensitive or not. Defaults to true.
      * @param {boolean} [config.callbackOnNoSelOnEnter] - Whether to fire @callback inputCallback on enter when nothing's been selected. Will use first displayed item or null. Defaults to false.
      * @param {boolean} [config.hideOnCallbackFired] - Whether to hide Yupput dialogue on callback fired or not. Defaults to false.
+     * @param {boolean} [config.hideOnClickOutside] - Whether to hide Yupput dialogue on a click outside the dialogue or not. Defaults to false.
      * @param {boolean} [config.preloadImages] - Whether to preload the images of the items passed into the constructor or not. Defaults to false.
      * @param {boolean} [config.matchOnlyHeadline] - Whether to find matches only over the headline value and not within meta data. Defaults to false.
      * @param {boolean} [config.containsForHeadlineMatches] - Whether to use contains for headline matching instead of starts-with-check. Defaults to false.
@@ -74,6 +75,7 @@
         var DEFAULT_CONTAINS_FOR_META_MATCHES = false;
         var DEFAULT_CALLBACK_ON_NO_SELECTION_ON_ENTER = false;
         var DEFAULT_HIDE_ON_CALLBACK = false;
+        var DEFAULT_HIDE_ON_CLICK_OUTSIDE = false;
         var DEFAULT_MATCH_CASE_INSENSITIVE = true;
         var DEFAULT_MOVE_CURSOR_BACK_TO_END_ON_UP_ARROW = true;
 
@@ -183,6 +185,11 @@
          * @†ype {boolean}
          */
         var hideOnCallbackFired;
+
+        /**
+         * @†ype {boolean}
+         */
+        var hideOnClickOutside;
 
         /**
          * @†ype {boolean}
@@ -925,6 +932,24 @@
             var i;
             var c = valuesPrivateWRendering.length;
             var yupputFindingContainerHandle;
+
+            if (true === hideOnCallbackFired) {
+
+                document.addEventListener(CLICK, function (e) {
+
+                    var cTarget = e.target;
+                    while (cTarget.parentNode !== null) {
+
+                        cTarget = cTarget.parentNode;
+                        if (cTarget.id && cTarget.id === CONTAINER_ID) {
+
+                            return;
+                        }
+                    }
+
+                    hidePrivate();
+                });
+            }
 
             var registerMouseMoveBehaviour = function(yupputFindingContainerHandle) {
 
