@@ -933,7 +933,7 @@
             var c = valuesPrivateWRendering.length;
             var yupputFindingContainerHandle;
 
-            if (true === hideOnCallbackFired) {
+            if (true === hideOnClickOutside) {
 
                 document.addEventListener(CLICK, function (e) {
 
