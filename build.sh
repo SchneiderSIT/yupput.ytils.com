@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="0.13.2"
+VERSION="0.13.3"
 
 cp ../jsmrg.ytils.com/application.jsmrg.ytils.com/bin/Debug/netcoreapp3.1/application.jsmrg.ytils.com.dll ./build
 cp ../jsmrg.ytils.com/application.jsmrg.ytils.com/bin/Debug/netcoreapp3.1/application.jsmrg.ytils.com.pdb ./build
