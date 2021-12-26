@@ -5,7 +5,7 @@
     <title>Ytils Yupput</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="./css/ytils.yupput.examples.css" rel="stylesheet" type="text/css" media="screen" />
-    <link href="../ytils.yupput-0.13.0.css" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../dist/ytils.yupput-0.13.2.css" rel="stylesheet" type="text/css" media="screen" />
 </head>
 <body>
 <div id="ytilsYupputPresentation">
@@ -41,6 +41,10 @@
                     <td>Reduced to <em>3</em></td>
                 </tr>
                 <tr>
+                    <td>.zIndex</td>
+                    <td>Increased to <em>9900</em></td>
+                </tr>
+                <tr>
                     <td>.preloadImages</td>
                     <td>Changed to <em>true</em></td>
                 </tr>
@@ -59,7 +63,7 @@
         </div>
     </div>
 </div>
-<script src="../ytils.yupput-0.13.0.css"></script>
+<script src="../dist/ytils.yupput-0.13.2.js"></script>
 <script src="https://opendata.ytils.com/example/yupput/default.js"></script>
 <script>
 
@@ -75,6 +79,7 @@
 
         yupput = new Ytils.Yupput(sampleData, yupputSelectionCallback, {
 
+            zIndex: 9900,
             placeholder: "Find something",
             hideOnEscape: false,
             maxItemCount: 3,
