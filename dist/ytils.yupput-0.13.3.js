@@ -603,7 +603,7 @@
 
         } else {
 
-            Ytils.YupputHelper.thrErr("Ytils.YupputHtml.hideElement() expects parameter elem to be an instance of HTMLObjectElement.");
+            Ytils.YupputHelper.thrErr("Ytils.YupputHtml.showElement() expects parameter elem to be an instance of HTMLObjectElement.");
         }
 
         return elem;
